@@ -2,7 +2,7 @@ import psycopg
 import uuid
 import bcrypt
 from database.db_pool import DatabasePool
-from models import UserRegistrationModel
+from api.auth import models
 from fastapi import HTTPException
 
 def get_db():
@@ -34,7 +34,7 @@ async def fetch_db(query: str, params=None, fetchMany=False):
     finally:
         pool.putconn(conn)
 
-async def add_user_to_db(user: UserRegistrationModel, authenticatedWithStrategy: bool):
+async def add_user_to_db(user: models.UserRegistrationModel, authenticatedWithStrategy: bool):
     pool = get_db()
     if pool is None:
         print("Database connection pool is not available.")

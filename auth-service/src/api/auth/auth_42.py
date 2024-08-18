@@ -5,12 +5,12 @@ from fastapi import APIRouter, Request, Response
 from fastapi.responses import RedirectResponse
 from dotenv import load_dotenv
 from database.db import add_user_to_db, fetch_db
-from jw_tokens import sign_tokens
+from .jw_tokens import sign_tokens
 
 load_dotenv()
 router = APIRouter()
 
-@router.get('/api/auth/42')
+@router.get('/')
 def ft_auth():
     client_id = f'client_id={os.getenv("ft_client_id")}'
     redirect_uri = 'redirect_uri=http://localhost:8000/api/auth/42/redirect'
@@ -20,7 +20,7 @@ def ft_auth():
     ft_auth_url = f'https://api.intra.42.fr/oauth/authorize?{client_id}&{redirect_uri}&{response_type}&{scope}&{state}'
     return RedirectResponse(url=ft_auth_url)
 
-@router.get('/api/auth/42/redirect')
+@router.get('/redirect')
 async def ft_auth_callback(request: Request, response: Response):
     # state = request.query_params.get('state')
     client_id = f'client_id={os.getenv("ft_client_id")}'
@@ -37,7 +37,7 @@ async def ft_auth_callback(request: Request, response: Response):
         user_info_response = await client.get(
             f"https://api.intra.42.fr/v2/me",
             headers = {
-                'Authorization': f'Bearer { token_data.get('access_token') }'
+                'Authorization': f"Bearer { token_data.get('access_token') }"
             }
         )
     user_info = user_info_response.json()
@@ -48,7 +48,6 @@ async def ft_auth_callback(request: Request, response: Response):
     if user_data is not None:
         keys = ['id', 'email', 'username', 'first_name', 'last_name', 'passwd', 'picture']
         user = dict(zip(keys, user_data))
-        del user['passwd']
     if user is None:
         user = await add_user_to_db({
             'email': user_info.get('email'),

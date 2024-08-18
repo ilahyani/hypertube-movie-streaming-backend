@@ -2,17 +2,11 @@
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from auth_google import router as google_auth
-from auth_42 import router as ft_auth
-from auth_register import router as register_auth
-from login import router as login
+from api import api as auth_api
 
 app = FastAPI()
 
-app.include_router(google_auth)
-app.include_router(ft_auth)
-app.include_router(register_auth)
-app.include_router(login)
+app.include_router(auth_api.router, prefix='/api/auth')
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):

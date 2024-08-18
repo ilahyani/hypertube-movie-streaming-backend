@@ -4,13 +4,13 @@ import httpx
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import RedirectResponse
 from dotenv import load_dotenv
-from database.db import add_user_to_db, get_user_from_db, fetch_db
-from jw_tokens import sign_tokens
+from database.db import add_user_to_db, fetch_db
+from .jw_tokens import sign_tokens
 
 load_dotenv()
 router = APIRouter()
 
-@router.get('/api/auth/google')
+@router.get('/')
 def gl_auth():
     client_id = f'client_id={os.getenv("gl_client_id")}'
     redirect_uri = 'redirect_uri=http://localhost:8000/api/auth/google/redirect'
@@ -20,7 +20,7 @@ def gl_auth():
     gl_auth_url = f'https://accounts.google.com/o/oauth2/v2/auth?{client_id}&{redirect_uri}&{response_type}&{scope}&{state}'
     return RedirectResponse(url=gl_auth_url)
 
-@router.get('/api/auth/google/redirect')
+@router.get('/redirect')
 async def gl_auth_callback(request: Request, response: Response):
     # state = request.query_params.get('state')
     client_id = f'client_id={os.getenv("gl_client_id")}'
@@ -42,7 +42,7 @@ async def gl_auth_callback(request: Request, response: Response):
         )
     user_info = user_info_response.json()
     query = "SELECT * FROM users WHERE username = %s AND email = %s ;"
-    params = (user_info.get('name'), user_info.get('email'))
+    params = (user_info.get('name').replace(" ", "_"), user_info.get('email'))
     user_data = await fetch_db(query, params)
     user = None
     if user_data is not None:
@@ -56,7 +56,6 @@ async def gl_auth_callback(request: Request, response: Response):
             'username': user_info.get('name'),
             'picture': user_info.get('picture')
         }, True)
-    del user['passwd']
     access_token, refresh_token = sign_tokens(user)
     response.set_cookie(key='access_token', value=access_token, httponly=True)
     response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)

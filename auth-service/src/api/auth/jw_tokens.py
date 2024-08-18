@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def sign_tokens(user):
-    print(f'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> {os.getenv('JWT_SECRET')}')
     access_payload = {
         'user_id': user.get('id'),
         'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=1)
