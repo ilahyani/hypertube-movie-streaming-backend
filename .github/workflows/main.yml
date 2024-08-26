@@ -1,0 +1,51 @@
+name: Deploy Auth Service
+'on':
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Decode .env file
+        run: >
+          echo "${{ secrets.ENCRYPTED_ENV_FILE }}" | base64 --decode > .env.gpg
+
+          gpg --quiet --batch --yes --decrypt --passphrase="${{
+          secrets.SECRET_PASSPHRASE }}" --output .env .env.gpg
+      - name: Setup AWS creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+          aws-region: '${{ secrets.AWS_REGION }}'
+      - name: Build Docker image
+        run: docker build -t auth-service .
+      - name: Push Docker image to ECR
+        run: >
+          echo "$AWS_ECR_PASSWORD" | docker login -u AWS --password-stdin
+          https://$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+          docker tag auth-service:latest
+          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/auth-service:latest
+
+          docker push
+          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/auth-service:latest
+      - name: Update app on EC2
+        run: >
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }}
+          ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
+            docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/auth-service:latest
+            docker stop auth-service || true
+            docker rm auth-service || true
+            docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/auth-service:latest
+            rm .env .env.gpg
+          EOF
+      - name: Deploy infrastructure to EC2
+        if: >-
+          ${{ github.event.head_commit.modified }} &&
+          contains(github.event.head_commit.modified, 'terraform/')
+        run: |
+          terraform init
+          terraform apply --auto-approve
