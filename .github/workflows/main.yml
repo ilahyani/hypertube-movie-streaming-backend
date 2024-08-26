@@ -13,7 +13,7 @@ jobs:
           echo "${{ secrets.ENCRYPTED_ENV_FILE }}" | base64 --decode > .env.gpg
 
           gpg --quiet --batch --yes --decrypt --passphrase="${{
-          secrets.SECRET_PASSPHRASE }}" --output .env .env.gpg
+          secrets.ENV_SECRET_PASSPHRASE }}" --output .env .env.gpg
       - name: Setup AWS creds
         uses: aws-actions/configure-aws-credentials@v1
         with:
