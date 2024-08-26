@@ -47,5 +47,6 @@ jobs:
           ${{ github.event.head_commit.modified }} &&
           contains(github.event.head_commit.modified, 'terraform/')
         run: |
+          cd auth-service/infrastructure
           terraform init
           terraform apply --auto-approve
