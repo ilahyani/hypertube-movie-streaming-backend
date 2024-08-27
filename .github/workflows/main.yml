@@ -45,7 +45,7 @@ jobs:
       - name: Deploy infrastructure to EC2
         if: >-
           ${{ github.event.head_commit.modified }} &&
-          contains(github.event.head_commit.modified, 'terraform/')
+          contains(github.event.head_commit.modified, 'infrastructure/')
         run: |
           cd auth-service/infrastructure
           terraform init
