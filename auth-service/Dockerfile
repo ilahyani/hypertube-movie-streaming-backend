@@ -6,7 +6,8 @@ COPY . .
 
 RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 
+# DEV
 CMD ["fastapi", "dev", "src/main.py", "--host", "0.0.0.0"]
 
-## PROD
+# PROD
 # CMD ["fastapi", "run", "--host", "0.0.0.0"]
