@@ -41,7 +41,9 @@ jobs:
             sudo docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
             sudo docker ps -aq | xargs docker rm -f
             sudo docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
+            sudo rm .env
           EOF
+          rm ec2_key* .env*
       - name: Deploy infrastructure to EC2
         if: >-
           ${{ github.event.head_commit.modified }} &&
