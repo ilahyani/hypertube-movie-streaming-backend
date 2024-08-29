@@ -36,7 +36,7 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.base64
           base64 --decode ec2_key.base64 > ec2_key.pem
           chmod 600 ec2_key.pem
-          scp -i ./ec2_key.pem .env ubuntu@${{ secrets.EC2_INSTANCE_IP }}:.env
+          scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem .env ubuntu@${{ secrets.EC2_INSTANCE_IP }}:.env
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
             sudo docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
             sudo docker ps -aq | xargs docker rm -f
