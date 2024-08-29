@@ -38,9 +38,9 @@ jobs:
           chmod 600 ec2_key.pem
           scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem .env ubuntu@${{ secrets.EC2_INSTANCE_IP }}:.env
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
-            sudo docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
-            sudo docker ps -aq | docker rm -f 2>/dev/null || true
-            sudo docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
+            sudo docker pull "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest"
+            sudo docker ps -aq | sudo docker rm -f 2>/dev/null || true
+            sudo docker run -d --name auth-service -p 8000:8000 --env-file .env "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest"
             sudo rm .env
           EOF
           rm ec2_key* .env*
