@@ -37,10 +37,11 @@ jobs:
           base64 --decode ec2_key.base64 > ec2_key.pem
           chmod 600 ec2_key.pem
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
-            docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
-            docker stop auth-service || true
-            docker rm auth-service || true
-            docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
+            sudo docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
+            sudo docker stop auth-service || true
+            sudo docker rm auth-service || true
+            sudo docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
+            sudo rm ec2_key* .env*
           EOF
       - name: Deploy infrastructure to EC2
         if: >-
