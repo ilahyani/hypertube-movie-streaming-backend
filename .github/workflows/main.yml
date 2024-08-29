@@ -41,7 +41,6 @@ jobs:
             docker stop auth-service || true
             docker rm auth-service || true
             docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
-            rm .env .env.gpg ec2_key.pem
           EOF
       - name: Deploy infrastructure to EC2
         if: >-
