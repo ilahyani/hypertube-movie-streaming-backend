@@ -21,13 +21,13 @@ jobs:
       - name: Build Docker image
         run: docker build -t auth-service ./auth-service
       - name: Push Docker image to ECR
+        env:
+          AWS_ACCOUNT_ID: '${{ secrets.AWS_ACCOUNT_ID }}'
         run: |
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ecr/repo
           docker tag auth-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ecr/repo:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ecr/repo:latest
       - name: Update app on EC2
-        env:
-          AWS_ACCOUNT_ID: '${{ secrets.AWS_ACCOUNT_ID }}'
         run: >
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }}
           ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
