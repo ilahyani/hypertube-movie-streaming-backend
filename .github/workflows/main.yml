@@ -11,7 +11,6 @@ jobs:
       - name: Decode .env file
         run: >
           echo "${{ secrets.ENCRYPTED_ENV_FILE }}" | base64 --decode > .env.gpg
-
           gpg --quiet --batch --yes --decrypt --passphrase="${{
           secrets.ENV_SECRET_PASSPHRASE }}" --output .env .env.gpg
       - name: Setup AWS creds
@@ -20,19 +19,13 @@ jobs:
           aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
           aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
           aws-region: '${{ secrets.AWS_REGION }}'
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/login-to-ecr@v1
       - name: Build Docker image
-        run: |
-          cd auth-service
-          docker build -t ${{ steps.login-ecr.outputs.registry }}/repo:latest .
+        run: docker build -t auth-service ./auth-service
       - name: Push Docker image to ECR
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          echo "Pushing to ${REGISTRY}/repo:latest"
-          docker push ${{ steps.login-ecr.outputs.registry }}/repo:latest
+          aws ecr get-login-password --region ${{secrets.AWS_REGION}} | docker login --username AWS --password-stdin ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo
+          docker tag auth-service:latest ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo/repo:latest
+          docker push ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo:latest
       - name: Update app on EC2
         run: >
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }}
