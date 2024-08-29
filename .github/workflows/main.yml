@@ -28,8 +28,9 @@ jobs:
           docker tag auth-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
       - name: Update app on EC2
-        run: >
+        run: |
           echo "${{ secrets.EC2_SSH_KEY }}" | base64 --decode > ec2_key.pem
+          
           ssh -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
             docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
             docker stop auth-service || true
