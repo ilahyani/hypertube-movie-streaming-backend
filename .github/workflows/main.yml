@@ -27,7 +27,7 @@ jobs:
           aws ecr get-login-password --region ${{secrets.AWS_REGION}} | docker login --username AWS --password-stdin
           ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo
 
-          docker tag repo:latest
+          docker tag auth-service:latest
           ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo/repo:latest
 
           docker push
