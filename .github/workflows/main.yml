@@ -1,49 +1,58 @@
 name: Deploy Auth Service
+
 'on':
   push:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+
     steps:
       - uses: actions/checkout@v2
+
       - name: Decode .env file
-        run: >
+        run: |
           echo "${{ secrets.ENCRYPTED_ENV_FILE }}" | base64 --decode > .env.gpg
-          
-          gpg --quiet --batch --yes --decrypt --passphrase="${{
-          secrets.ENV_SECRET_PASSPHRASE }}" --output .env .env.gpg
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.ENV_SECRET_PASSPHRASE }}" --output .env .env.gpg
+
       - name: Setup AWS creds
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
           aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
           aws-region: '${{ secrets.AWS_REGION }}'
+
       - name: Build Docker image
         run: docker build -t auth-service ./auth-service
+
       - name: Push Docker image to ECR
-        run: >
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin
-          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ecr/repo
-          docker tag auth-service:latest
-          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ecr/repo/auth-service:latest
-          docker push
-          $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ecr/repo/auth-service:latest
+        env:
+          ECR_REPO: "${{ secrets.ECR_REPO }}"
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+          docker tag auth-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
+
       - name: Update app on EC2
-        run: >
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }}
-          ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
-            docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ecr/repo/auth-service:latest
+        env:
+          ECR_REPO: "${{ secrets.ECR_REPO }}"
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
+            docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
             docker stop auth-service || true
             docker rm auth-service || true
-            docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ecr/repo/auth-service:latest
+            docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPO:latest
             rm .env .env.gpg
           EOF
+
       - name: Deploy infrastructure to EC2
         if: >-
-          ${{ github.event.head_commit.modified }} &&
-          contains(github.event.head_commit.modified, 'infrastructure/')
+          contains(github.event.head_commit.message, 'infrastructure/')
         run: |
           cd auth-service/infrastructure
           terraform init
