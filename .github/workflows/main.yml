@@ -24,22 +24,22 @@ jobs:
         run: docker build -t auth-service ./auth-service
       - name: Push Docker image to ECR
         run: >
-          aws ecr get-login-password --region ${{AWS_REGION}} | docker login --username AWS --password-stdin
-          ${{AWS_ACCOUNT_ID}}.dkr.ecr.${{AWS_REGION}}.amazonaws.com/repo
+          aws ecr get-login-password --region ${{secrets.AWS_REGION}} | docker login --username AWS --password-stdin
+          ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo
 
           docker tag auth-service:latest
-          ${{AWS_ACCOUNT_ID}}.dkr.ecr.${{AWS_REGION}}.amazonaws.com/repo/auth-service:latest
+          ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo/auth-service:latest
 
           docker push
-          ${{AWS_ACCOUNT_ID}}.dkr.ecr.${{AWS_REGION}}.amazonaws.com/repo/auth-service:latest
+          ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo/auth-service:latest
       - name: Update app on EC2
         run: >
           ssh -o StrictHostKeyChecking=no -i ${{ secrets.EC2_SSH_KEY }}
           ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
-            docker pull ${{AWS_ACCOUNT_ID}}.dkr.ecr.${{AWS_REGION}}.amazonaws.com/repo/auth-service:latest
+            docker pull ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo/auth-service:latest
             docker stop auth-service || true
             docker rm auth-service || true
-            docker run -d --name auth-service -p 8000:8000 --env-file .env ${{AWS_ACCOUNT_ID}}.dkr.ecr.${{AWS_REGION}}.amazonaws.com/repo/auth-service:latest
+            docker run -d --name auth-service -p 8000:8000 --env-file .env ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/repo/auth-service:latest
             rm .env .env.gpg
           EOF
       - name: Deploy infrastructure to EC2
