@@ -44,14 +44,3 @@ jobs:
             sudo rm .env
           EOF
           rm ec2_key* .env*
-      - name: Deploy infrastructure to EC2
-        if: >-
-          ${{ github.event.head_commit.modified }} &&
-          contains(github.event.head_commit.modified, 'infrastructure/')
-        run: |
-          cd auth-service/infrastructure
-          echo "${{ secrets.TERRAFORM_VARS }}" | base64 --decode > terraform.tfvars.gpg
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.ENV_SECRET_PASSPHRASE }}" --output terraform.tfvars terraform.tfvars.gpg
-          terraform init
-          terraform apply --auto-approve
-          rm terraform.tfvars.gpg
