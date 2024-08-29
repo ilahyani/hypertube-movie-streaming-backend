@@ -33,8 +33,8 @@ jobs:
           AWS_ACCOUNT_ID: '${{ secrets.AWS_ACCOUNT_ID }}'
           AWS_REGION: '${{ secrets.AWS_REGION }}'
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key_base64.txt
-          base64 --decode -i ec2_key_base64.txt -o ec2_key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.base64
+          base64 --decode -i ec2_key.base64 -o ec2_key.pem
           chmod 600 ec2_key.pem
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
             docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
