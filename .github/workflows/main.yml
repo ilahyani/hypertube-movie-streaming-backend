@@ -29,22 +29,15 @@ jobs:
           docker tag auth-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
       - name: Update app on EC2
-        env:
-          AWS_ACCOUNT_ID: '${{ secrets.AWS_ACCOUNT_ID }}'
-          AWS_REGION: '${{ secrets.AWS_REGION }}'
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.base64
           base64 --decode ec2_key.base64 > ec2_key.pem
           chmod 600 ec2_key.pem
           scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem .env ubuntu@${{ secrets.EC2_INSTANCE_IP }}:.env
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
-            echo "AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID"
-            echo "AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-            echo "AWS_REGION: $AWS_REGION"
-            echo "AWS_REGION: ${{ secrets.AWS_REGION }}
-            sudo docker pull $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
+            sudo docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/repo:latest
             sudo docker ps -aq | sudo docker rm -f 2>/dev/null || true
-            sudo docker run -d --name auth-service -p 8000:8000 --env-file .env $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
+            sudo docker run -d --name auth-service -p 8000:8000 --env-file .env ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/repo:latest
             sudo rm .env
           EOF
           rm ec2_key* .env*
