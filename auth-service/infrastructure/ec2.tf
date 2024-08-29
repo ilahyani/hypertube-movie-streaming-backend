@@ -3,6 +3,7 @@ resource "aws_instance" "auth_service" {
   instance_type          = "t2.micro"
   key_name               = aws_key_pair.auth_service_key.key_name
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+  iam_instance_profile   = aws_iam_instance_profile.instance_profile.name
   tags = {
     Name = "AuthServiceInstance"
   }
@@ -38,14 +39,14 @@ resource "aws_security_group" "allow_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${var.ip_address}/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["${var.ip_address}/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
