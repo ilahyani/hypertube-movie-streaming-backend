@@ -2,9 +2,9 @@ import os
 import urllib.parse
 import httpx
 from fastapi import APIRouter, Request, Response
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from dotenv import load_dotenv
-from database.db import add_user_to_db, fetch_db
+from src.database.db import add_user_to_db, fetch_db
 from .jw_tokens import sign_tokens
 
 load_dotenv()
@@ -13,7 +13,7 @@ router = APIRouter()
 @router.get('/')
 def ft_auth():
     client_id = f'client_id={os.getenv("ft_client_id")}'
-    redirect_uri = 'redirect_uri=http://localhost:8000/api/auth/42/redirect'
+    redirect_uri = f'redirect_uri={os.getenv('ft_redirect_uri')}'
     response_type = 'response_type=code'
     scope = 'scope=public'
     state = f'state='
@@ -27,11 +27,13 @@ async def ft_auth_callback(request: Request, response: Response):
     client_secret = f'client_secret={os.getenv("ft_client_secret")}'
     code = f'code={request.query_params.get("code")}'
     grant_type = f'grant_type=authorization_code'
-    redirect_uri = 'redirect_uri=http://localhost:8000/api/auth/42/redirect'
+    redirect_uri = f'redirect_uri={os.getenv('ft_redirect_uri')}'
     ft_token_url = f'https://api.intra.42.fr/oauth/token?{client_id}&{client_secret}&{code}&{grant_type}&{redirect_uri}'
 
     async with httpx.AsyncClient() as client:
         token_response = await client.post(ft_token_url)
+        if token_response.status_code != 200:
+            return JSONResponse(status_code=400, content={"error": "Failed to retrieve access token"})
         token_data = token_response.json()
     async with httpx.AsyncClient() as client:
         user_info_response = await client.get(
@@ -40,6 +42,8 @@ async def ft_auth_callback(request: Request, response: Response):
                 'Authorization': f"Bearer { token_data.get('access_token') }"
             }
         )
+        if user_info_response.status_code != 200:
+            return JSONResponse(status_code=400, content={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
     query = "SELECT * FROM users WHERE username = %s AND email = %s ;"
     params = (user_info.get('login'), user_info.get('email'))

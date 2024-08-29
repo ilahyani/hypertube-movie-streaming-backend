@@ -1,7 +1,7 @@
 import bcrypt
 from fastapi import APIRouter, Response, HTTPException
 from pydantic import BaseModel, Field
-from database.db import get_user_from_db
+from src.database.db import get_user_from_db
 from .jw_tokens import sign_tokens
 from .models import UserLoginModel
 

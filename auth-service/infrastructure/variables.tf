@@ -17,3 +17,7 @@ variable "db_user" {
 variable "db_passwd" {
   type = string
 }
+
+variable "ip_address" {
+  type = string
+}

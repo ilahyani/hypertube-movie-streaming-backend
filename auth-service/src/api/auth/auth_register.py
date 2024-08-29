@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, HTTPException
 from .models import UserRegistrationModel
-from database.db import add_user_to_db
+from src.database.db import add_user_to_db
 from .jw_tokens import sign_tokens
 # import jw_tokens
 

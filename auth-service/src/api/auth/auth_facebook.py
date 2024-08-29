@@ -1,5 +1,4 @@
 import os
-import urllib.parse
 import httpx
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import RedirectResponse, JSONResponse
@@ -11,40 +10,32 @@ load_dotenv()
 router = APIRouter()
 
 @router.get('/')
-def gl_auth():
-    client_id = f'client_id={os.getenv("gl_client_id")}'
-    redirect_uri = f'redirect_uri={os.getenv('gl_redirect_uri')}'
-    response_type = 'response_type=code'
-    scope = f"scope={urllib.parse.quote('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile')}"
+def fb_auth():
+    client_id = f'client_id={os.getenv("fb_client_id")}'
+    redirect_uri = f'redirect_uri={os.getenv('fb_redirect_uri')}'
     state = f'state='
-    gl_auth_url = f'https://accounts.google.com/o/oauth2/v2/auth?{client_id}&{redirect_uri}&{response_type}&{scope}&{state}'
-    return RedirectResponse(url=gl_auth_url)
+    fb_auth_url = f'https://www.facebook.com/v20.0/dialog/oauth?{client_id}&{redirect_uri}&{state}'
+    return RedirectResponse(url=fb_auth_url)
 
 @router.get('/redirect')
-async def gl_auth_callback(request: Request, response: Response):
-    # state = request.query_params.get('state')
-    client_id = f'client_id={os.getenv("gl_client_id")}'
-    client_secret = f'client_secret={os.getenv("gl_client_secret")}'
-    grant_type = f'grant_type=authorization_code'
-    redirect_uri = f'redirect_uri={os.getenv('gl_redirect_uri')}'
+async def fb_auth_callback(request: Request, response: Response):
+    client_id = f'client_id={os.getenv("fb_client_id")}'
+    client_secret = f'client_secret={os.getenv("fb_client_secret")}'
     code = f'code={request.query_params.get("code")}'
-    gl_token_url = f'https://oauth2.googleapis.com/token?{client_id}&{client_secret}&{code}&{grant_type}&{redirect_uri}'
-
+    redirect_uri = f'redirect_uri={os.getenv('fb_redirect_uri')}'
+    fb_token_url = f'https://graph.facebook.com/v20.0/oauth/access_token?{client_id}&{redirect_uri}&{client_secret}&{code}'
     async with httpx.AsyncClient() as client:
-        token_response = await client.post(gl_token_url)
+        token_response = await client.post(fb_token_url)
         if token_response.status_code != 200:
             return JSONResponse(status_code=400, content={"error": "Failed to retrieve access token"})
         token_data = token_response.json()
     async with httpx.AsyncClient() as client:
-        user_info_response = await client.get(
-            f"https://www.googleapis.com/oauth2/v1/userinfo",
-            headers = {
-                'Authorization': f"Bearer { token_data.get('access_token') }"
-            }
-        )
+        user_info_response = await client.get(f"https://graph.facebook.com/v20.0/me/?fields=email%2Cfirst_name%2Clast_name%2Cpicture%7Burl%7D%2Cname&access_token={token_data.get('access_token')}")
         if user_info_response.status_code != 200:
             return JSONResponse(status_code=400, content={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
+    if (user_info.get('email') == None):
+        return JSONResponse(status_code=400, content={"error": "Signup failed: Email is required."})
     query = "SELECT * FROM users WHERE username = %s AND email = %s ;"
     params = (user_info.get('name').replace(" ", "_"), user_info.get('email'))
     user_data = await fetch_db(query, params)
@@ -55,10 +46,10 @@ async def gl_auth_callback(request: Request, response: Response):
     if user is None:
         user = await add_user_to_db({
             'email': user_info.get('email'),
-            'first_name': user_info.get('given_name'),
-            'last_name': user_info.get('family_name') or user_info.get('given_name'),
+            'first_name': user_info.get('first_name'),
+            'last_name': user_info.get('last_name') or user_info.get('given_name'),
             'username': user_info.get('name'),
-            'picture': user_info.get('picture')
+            'picture': user_info.get('picture.data.url') or None
         }, True)
     access_token, refresh_token = sign_tokens(user)
     response.set_cookie(key='access_token', value=access_token, httponly=True)
