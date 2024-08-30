@@ -32,7 +32,7 @@ jobs:
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.base64
           base64 --decode ec2_key.base64 > ec2_key.pem.gpg
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.ENV_SECRET_PASSPHRASE }}" --output ec2_key.pem.gpg ec2_key.pem
+          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.ENV_SECRET_PASSPHRASE }}" --output ec2_key.pem ec2_key.pem.gpg
           chmod 600 ec2_key.pem
           scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem .env ubuntu@${{ secrets.EC2_INSTANCE_IP }}:.env
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
