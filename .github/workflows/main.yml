@@ -28,18 +28,20 @@ jobs:
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo
           docker tag auth-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
-      - name: Update app on EC2
+      - name: Decoding SSH KEY
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > ec2_key.base64
           base64 --decode ec2_key.base64 > ec2_key.pem.gpg
           gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.ENV_SECRET_PASSPHRASE }}" --output ec2_key.pem ec2_key.pem.gpg
           chmod 600 ec2_key.pem
+      - name: Update app on EC2
+        run: |
           scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem .env ubuntu@${{ secrets.EC2_INSTANCE_IP }}:.env
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo
             sudo docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/repo:latest
             sudo docker ps -aq | sudo xargs docker rm -f 2>/dev/null || true
-            sudo docker run -d --name auth-service -p 80:8000 --env-file .env ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/repo:latest
+            sudo docker run -d --name auth-service -p 443:8000 --env-file .env ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/repo:latest
             sudo rm .env
           EOF
           rm ec2_key* .env*
