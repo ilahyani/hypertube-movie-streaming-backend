@@ -39,14 +39,14 @@ resource "aws_security_group" "allow_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${var.ip_address}/32"]
+    cidr_blocks = var.ip_address
   }
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["${var.ip_address}/32"]
+    cidr_blocks = var.ip_address
   }
 
   egress {
