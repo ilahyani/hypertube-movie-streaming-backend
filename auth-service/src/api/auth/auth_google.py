@@ -1,11 +1,11 @@
 import os
 import urllib.parse
 import httpx
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request, Response, HTTPException
 from fastapi.responses import RedirectResponse, JSONResponse
 from dotenv import load_dotenv
-from src.database.db import add_user_to_db, fetch_db
 from .jw_tokens import sign_tokens
+from .register_user import register_user
 
 load_dotenv()
 router = APIRouter()
@@ -33,9 +33,8 @@ async def gl_auth_callback(request: Request, response: Response):
     async with httpx.AsyncClient() as client:
         token_response = await client.post(gl_token_url)
         if token_response.status_code != 200:
-            return JSONResponse(status_code=400, content={"error": "Failed to retrieve access token"})
+            return HTTPException(status_code=400, content={"error": "Failed to retrieve access token"})
         token_data = token_response.json()
-    async with httpx.AsyncClient() as client:
         user_info_response = await client.get(
             f"https://www.googleapis.com/oauth2/v1/userinfo",
             headers = {
@@ -43,23 +42,14 @@ async def gl_auth_callback(request: Request, response: Response):
             }
         )
         if user_info_response.status_code != 200:
-            return JSONResponse(status_code=400, content={"error": "Failed to retrieve user info"})
+            return HTTPException(status_code=400, content={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
-    query = "SELECT * FROM users WHERE username = %s AND email = %s ;"
-    params = (user_info.get('name').replace(" ", "_"), user_info.get('email'))
-    user_data = await fetch_db(query, params)
-    user = None
-    if user_data is not None:
-        keys = ['id', 'email', 'username', 'first_name', 'last_name', 'passwd', 'picture']
-        user = dict(zip(keys, user_data))
-    if user is None:
-        user = await add_user_to_db({
-            'email': user_info.get('email'),
-            'first_name': user_info.get('given_name'),
-            'last_name': user_info.get('family_name') or user_info.get('given_name'),
-            'username': user_info.get('name'),
-            'picture': user_info.get('picture')
-        }, True)
+    email = user_info.get('email')
+    first_name = user_info.get('given_name')
+    last_name = user_info.get('family_name') or user_info.get('given_name')
+    username = user_info.get('name')
+    picture = user_info.get('picture')
+    user = await register_user(email, first_name, last_name, username, picture)
     access_token, refresh_token = sign_tokens(user)
     response.set_cookie(key='access_token', value=access_token, httponly=True)
     response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
