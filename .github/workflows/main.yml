@@ -19,7 +19,7 @@ jobs:
           aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
           aws-region: '${{ secrets.AWS_REGION }}'
       - name: Build Docker image
-        run: docker build -t auth-service ./auth-service
+        run: docker build --no-cache -t auth-service ./auth-service
       - name: Push Docker image to ECR
         env:
           AWS_ACCOUNT_ID: '${{ secrets.AWS_ACCOUNT_ID }}'
