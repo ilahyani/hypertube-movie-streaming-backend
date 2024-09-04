@@ -19,13 +19,14 @@ jobs:
           aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
           aws-region: '${{ secrets.AWS_REGION }}'
       - name: Build Docker image
-        run: docker build --no-cache -t auth-service:latest ./auth-service
+        run: docker build --no-cache -t auth-service ./auth-service
       - name: Push Docker image to ECR
         env:
           AWS_ACCOUNT_ID: '${{ secrets.AWS_ACCOUNT_ID }}'
           AWS_REGION: '${{ secrets.AWS_REGION }}'
         run: |
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo
+          docker tag auth-service:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/repo:latest
       - name: Decoding SSH KEY
         run: |
