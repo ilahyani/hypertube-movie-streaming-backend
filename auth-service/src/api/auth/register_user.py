@@ -18,7 +18,7 @@ async def upload_avatar_to_s3(username, url):
             aws_secret_access_key = os.getenv('AWS_SECRET'))
         s3_key = f'avatars/{datetime.datetime.now(datetime.UTC).strftime("%Y%m%d%H%M%S")}_{username}_avatar.jpg'
         s3.put_object(Bucket='hyper-hyper-bucket', Key=s3_key, Body=content)
-        return s3_key
+        return f"https://hyper-hyper-bucket.s3.amazonaws.com/{s3_key}"
     except Exception as e:
         print(e)
     avatar_url = ''
