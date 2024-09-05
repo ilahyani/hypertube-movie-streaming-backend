@@ -39,9 +39,9 @@ jobs:
           scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem .env ubuntu@${{ secrets.EC2_INSTANCE_IP }}:.env
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i ./ec2_key.pem ubuntu@${{ secrets.EC2_INSTANCE_IP }} << 'EOF'
             aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/repo
-            sudo docker ps -aq | sudo xargs docker rm -f 2>/dev/null || true
-            sudo docker images -aq | sudo xargs docker rmi 2>/dev/null || true
-            sudo docker run -d --name auth-service -p 80:8000 --env-file .env ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/repo:latest
+            docker ps -aq | sudo xargs docker rm -f 2>/dev/null || true
+            docker images -aq | sudo xargs docker rmi 2>/dev/null || true
+            docker run -d --name auth-service -p 80:8000 --env-file .env ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/repo:latest
             sudo rm .env
           EOF
           rm ec2_key* .env*
