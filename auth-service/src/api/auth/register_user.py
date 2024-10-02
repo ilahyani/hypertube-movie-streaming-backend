@@ -33,12 +33,12 @@ async def register_user(email: str, first_name: str, last_name: str, username: s
         keys = ['id', 'email', 'username', 'first_name', 'last_name', 'passwd', 'picture']
         user = dict(zip(keys, user_data))
     if user is None:
-        picture_s3_path = await upload_avatar_to_s3(username, picture)
+        # picture_s3_path = await upload_avatar_to_s3(username, picture)
         user = await add_user_to_db({
             'email': email,
             'first_name': first_name,
             'last_name': last_name,
             'username': username,
-            'picture': picture_s3_path
+            'picture': picture
         }, True)
     return user

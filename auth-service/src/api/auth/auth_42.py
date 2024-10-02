@@ -33,7 +33,7 @@ async def ft_auth_callback(request: Request, response: Response):
     async with httpx.AsyncClient() as client:
         token_response = await client.post(ft_token_url)
         if token_response.status_code != 200:
-            return HTTPException(status_code=400, content={"error": "Failed to retrieve access token"})
+            return HTTPException(status_code=400, detail={"error": "Failed to retrieve access token"})
         token_data = token_response.json()
         user_info_response = await client.get(
             f"https://api.intra.42.fr/v2/me",
@@ -42,7 +42,7 @@ async def ft_auth_callback(request: Request, response: Response):
             }
         )
         if user_info_response.status_code != 200:
-            return HTTPException(status_code=400, content={"error": "Failed to retrieve user info"})
+            return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
     email = user_info.get('email')
     first_name = user_info.get('first_name')

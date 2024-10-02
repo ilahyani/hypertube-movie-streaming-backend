@@ -30,7 +30,7 @@ async def discord_auth(request: Request, response: Response):
         token_response = await client.post("https://discord.com/api/v10/oauth2/token", data=data)
         if token_response.status_code != 200:
             print(token_response)
-            return HTTPException(status_code=400, content={"error": "Failed to retrieve access token"})
+            return HTTPException(status_code=400, detail={"error": "Failed to retrieve access token"})
         token_data = token_response.json()
         user_info_response = await client.get(
             f"https://discord.com/api/v10/users/@me",
@@ -39,7 +39,7 @@ async def discord_auth(request: Request, response: Response):
             }
         )
         if user_info_response.status_code != 200:
-            return HTTPException(status_code=400, content={"error": "Failed to retrieve user info"})
+            return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
     # return user_info
     email = user_info.get('email')
