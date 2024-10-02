@@ -63,11 +63,14 @@ DB_USER = os.getenv('POSTGRES_USER')
 DB_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 DB_PORT = os.getenv('POSTGRES_PORT')
 
-with psycopg.connect(f"dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} host={DB_HOST} port={DB_PORT}") as conn:
-    with conn.cursor() as cur:
-        try:
-            cur.execute(migration_content)
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            exit(f'oops: {e}')
+try:
+    with psycopg.connect(f"dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} host={'localhost'} port={DB_PORT}") as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute(migration_content)
+                conn.commit()
+            except Exception as e:
+                conn.rollback()
+                exit(f'oops: {e}')
+except Exception as e:
+    print(f'Failed to connect to database: {e}')
