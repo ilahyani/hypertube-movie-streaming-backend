@@ -1,29 +1,29 @@
 services:
-  # database:
-  #   image: postgres:latest
-  #   container_name: database
-  #   ports:
-  #     - 5432:5432
-  #   env_file:
-  #     - .env
-  #   # volumes:
-  #   #   - ./migrations:/docker-entrypoint-initdb.d
-  #   networks:
-  #     - hyper-network
-  #   restart: on-failure
+  database:
+    image: postgres:latest
+    container_name: database
+    ports:
+      - 5432:5432
+    env_file:
+      - auth-service/.env
+    # volumes:
+    #   - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - hyper-network
+    restart: on-failure
 
   auth-service:
     build: ./auth-service
     image: auth-service
     container_name: auth-service
     volumes:
-      - .:/app
+      - ./auth-service:/app
     ports:
       - 8000:8000
     networks:
       - hyper-network
-    # depends_on:
-    #   - database
+    depends_on:
+      - database
     restart: on-failure
 
   user-service:
@@ -31,13 +31,13 @@ services:
     image: user-service
     container_name: user-service
     volumes:
-      - .:/app
+      - ./user-service:/app
     ports:
       - 8001:8000
     networks:
       - hyper-network
-    # depends_on:
-    #   - database
+    depends_on:
+      - database
     restart: on-failure
 
 networks:
