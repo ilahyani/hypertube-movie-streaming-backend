@@ -10,6 +10,8 @@ services:
     #   - ./migrations:/docker-entrypoint-initdb.d
     networks:
       - hyper-network
+    volumes:
+      - /tmp/db-data:/var/lib/postgresql/data
     restart: on-failure
 
   auth-service:
@@ -20,6 +22,7 @@ services:
       - ./auth-service:/app
     ports:
       - 8000:8000
+      - 50051:50051
     networks:
       - hyper-network
     depends_on:
