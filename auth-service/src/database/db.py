@@ -16,7 +16,7 @@ async def fetch_db(query: str, params=None, fetchMany=False):
     pool = get_db()
     if pool is None:
         print("Database connection pool is not available.")
-        raise HTTPException(status_code=500, detail=f"Database Failed")
+        raise HTTPException(status_code=500, detail=f"Database Failed: Connection Pool Error")
     conn = pool.getconn()
     raw_data = None
     try:
@@ -35,7 +35,7 @@ async def add_user_to_db(user: models.UserRegistrationModel, authenticatedWithSt
     pool = get_db()
     if pool is None:
         print("Database connection pool is not available.")
-        raise HTTPException(status_code=500, detail=f"Database Failed")
+        raise HTTPException(status_code=500, detail=f"Database Failed: Connection Pool Error")
     conn = pool.getconn()
     user['username'] = user['username'].replace(" ", "_")
     hashed_pw = ''
@@ -65,7 +65,8 @@ async def add_user_to_db(user: models.UserRegistrationModel, authenticatedWithSt
             raise HTTPException(status_code=400, detail=f"An account with this {unique_key} already exists")
     finally:
         pool.putconn(conn)
-    return user
+    registered_user = await get_user_from_db(user['username'])
+    return registered_user
 
 async def get_user_from_db(username: str):
     user = None
@@ -73,4 +74,13 @@ async def get_user_from_db(username: str):
     if data is not None:
         keys = ['id', 'email', 'username', 'first_name', 'last_name', 'passwd', 'picture']
         user = dict(zip(keys, data))
+    return user
+
+async def get_user_by_id(id: str):
+    user = None
+    data = await fetch_db("SELECT * FROM users WHERE id = %s ;", (id, ))
+    if data is not None:
+        keys = ['id', 'email', 'username', 'first_name', 'last_name', 'passwd', 'picture']
+        user = dict(zip(keys, data))
+    del user['passwd']
     return user

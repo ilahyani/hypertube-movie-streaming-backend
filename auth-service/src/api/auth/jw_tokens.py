@@ -7,7 +7,7 @@ load_dotenv()
 def sign_tokens(user):
     access_payload = {
         'user_id': user.get('id'),
-        'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=1)
+        'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=30)
     }
     refresh_payload = {
         'user_id': user.get('id'),
@@ -30,7 +30,7 @@ def refresh_token(refresh_token):
         return False, None
     payload = {
         'user_id': refresh_token_decoded['user_id'],
-        'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=1)
+        'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=30)
     }
     fresh_access_token = jwt.encode(payload, os.getenv('JWT_SECRET'), algorithm=os.getenv('JWT_ALGORITHM'))
     return True, fresh_access_token
