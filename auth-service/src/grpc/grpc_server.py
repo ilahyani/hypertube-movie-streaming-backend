@@ -2,10 +2,10 @@ import src.grpc.user_pb2 as user_pb2
 import src.grpc.user_pb2_grpc as user_pb2_grpc
 import grpc
 from concurrent import futures
-from src.database.db import get_user_by_id
+from src.database.db import get_user_by_id, update_user_data
 import asyncio
 
-class GetUserServicer(user_pb2_grpc.getUserServicer):
+class getUserServicer(user_pb2_grpc.getUserServicer):
     def getUserService(self, request, context):
         if not request.id:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
@@ -26,9 +26,31 @@ class GetUserServicer(user_pb2_grpc.getUserServicer):
         )
         return user_pb2.getUserResponse(user=user_response)
 
+class updateUserServicer(user_pb2_grpc.updateUserServicer):   
+    def updateUserService(self, request, context):
+        if not request.id:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('id is required to fetch the user')
+            return user_pb2.getUserResponse()
+        user = asyncio.run(update_user_data(request.id, data))
+        if user is None:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('invalid user id')
+            return user_pb2.getUserResponse()
+        user_response = user_pb2.User(
+            id=user['id'],
+            email=user['email'],
+            username=user['username'],
+            first_name=user['first_name'],
+            last_name=user['last_name'],
+            picture=user['picture'],
+        )
+        return user_pb2.getUserResponse(user=user_response)
+
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor())
-    user_pb2_grpc.add_getUserServicer_to_server(GetUserServicer(), server)
+    user_pb2_grpc.add_getUserServicer_to_server(getUserServicer(), server)
+    user_pb2_grpc.add_updateUserServicer_to_server(updateUserServicer(), server)
 
     server.add_insecure_port('[::]:50051')
     server.start()

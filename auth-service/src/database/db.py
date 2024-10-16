@@ -84,3 +84,9 @@ async def get_user_by_id(id: str):
         user = dict(zip(keys, data))
     del user['passwd']
     return user
+
+async def update_user_data(id: str, data):
+    user = get_user_by_id(id)
+    if not user:
+        return None
+    ## [[[[update user data]]]]

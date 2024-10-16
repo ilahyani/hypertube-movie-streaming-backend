@@ -22,3 +22,15 @@ message getUserResponse {
 service getUser {
     rpc getUserService (getUserRequest) returns (getUserResponse);
 }
+
+message updateUserRequest {
+    string id = 1;
+}
+
+message updateUserResponse {
+    User user = 1;
+}
+
+service updateUser {
+    rpc updateUserService (updateUserRequest) returns (updateUserResponse);
+}
