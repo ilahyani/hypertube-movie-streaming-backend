@@ -44,12 +44,20 @@ async def ft_auth_callback(request: Request, response: Response):
         if user_info_response.status_code != 200:
             return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
-    email = user_info.get('email')
+    # print('[42_OAUTH]', user_info)
+    oauth_id = str(user_info.get('id'))
+    email = user_info.get('email').lower()
     first_name = user_info.get('first_name')
     last_name = user_info.get('last_name')
-    username = user_info.get('login')
+    username = user_info.get('login').lower()
     picture = user_info.get('image')['link']
-    user = await register_user(email, first_name, last_name, username, picture)
+    try:
+        user = await register_user(oauth_id, email, first_name, last_name, username, picture)
+    except Exception as e:
+        print('[42_OAUTH]', e)
+        return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})
+    if user is None:
+        return HTTPException(status_code=400, detail={"error": "Failed to register user"})
     access_token, refresh_token = sign_tokens(user)
     response.set_cookie(key='access_token', value=access_token, httponly=True)
     response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)

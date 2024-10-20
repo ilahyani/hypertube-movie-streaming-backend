@@ -3,6 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from .api import api as auth_api
 from .grpc import grpc_server as grpc_server
+from src.database.db import search_users
 import threading
 import uvicorn
 import asyncio
@@ -30,5 +31,6 @@ async def start_grpc_server():
 
 # if __name__ == "__main__":
 loop = asyncio.get_event_loop()
-loop.run_until_complete(start_grpc_server())
-uvicorn.run(app, host='0.0.0.0', port=8000)
+    # loop.run_until_complete(start_grpc_server())
+loop.create_task(start_grpc_server())
+# uvicorn.run(app, host='0.0.0.0', port=8000)

@@ -41,12 +41,19 @@ async def discord_auth(request: Request, response: Response):
         if user_info_response.status_code != 200:
             return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
-    # return user_info
-    email = user_info.get('email')
+    # print('[D_OAUTH]', user_info)
+    oauth_id = user_info.get('id')
+    email = user_info.get('email').lower()
     name = user_info.get('global_name')
-    username = user_info.get('username')
+    username = user_info.get('username').lower()
     avatar = f'https://cdn.discordapp.com/avatars/{user_info.get('id')}/{user_info.get('avatar')}?size=256'
-    user = await register_user(email, name, name, username, avatar)
+    try:
+        user = await register_user(oauth_id, email, name, name, username, avatar)
+    except Exception as e:
+        print('[D_OAUTH]', e)
+        return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})
+    if user is None:
+        return HTTPException(status_code=400, detail={"error": "Failed to register user"})
     access_token, refresh_token = sign_tokens(user)
     response.set_cookie(key='access_token', value=access_token, httponly=True)
     response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)

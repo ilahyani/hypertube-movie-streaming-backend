@@ -8,6 +8,8 @@ CREATE TABLE IF NOT EXISTS migrations (
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT INTO migrations (version, description) VALUES ('0001', 'initial migration');
+
 CREATE TABLE IF NOT EXISTS users (
     id VARCHAR(255) PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -17,7 +19,5 @@ CREATE TABLE IF NOT EXISTS users (
     passwd VARCHAR(255),
     picture TEXT
 );
-
-INSERT INTO migrations (version, description) VALUES ('0001', 'initial migration');
 
 COMMIT;

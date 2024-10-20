@@ -1,0 +1,100 @@
+syntax = "proto3";
+
+package user;
+
+// GET USER API
+
+message User {
+    string id = 1;
+    string email = 2;
+    string username = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string picture = 6;
+}
+
+message getUserRequest {
+    string id = 1;
+}
+
+message getUserResponse {
+    User user = 1;
+}
+
+service getUser {
+    rpc getUserService (getUserRequest) returns (getUserResponse);
+}
+
+// USER SEARCH API
+
+message searchUsersRequest {
+    string query = 1;
+}
+
+message searchUsersResponse {
+    repeated User users = 1;
+}
+
+service searchUsers {
+    rpc searchUsersService (searchUsersRequest) returns (searchUsersResponse);
+}
+
+// USERNAME UPDATE API
+
+message updateUsernameRequest {
+    string id = 1;
+    string username = 2;
+}
+
+message updateUsernameResponse {
+    User user = 1;
+}
+
+service updateUsername {
+    rpc updateUsernameService (updateUsernameRequest) returns (updateUsernameResponse);
+}
+
+// EMAIL UPDATE API
+
+message updateEmailRequest {
+    string id = 1;
+    string email = 2;
+}
+
+message updateEmailResponse {
+    User user = 1;
+}
+
+service updateEmail {
+    rpc updateEmailService (updateEmailRequest) returns (updateEmailResponse);
+}
+
+// FIRST_NAME UPDATE API
+
+message updateFirstnameRequest {
+    string id = 1;
+    string first_name = 2;
+}
+
+message updateFirstnameResponse {
+    User user = 1;
+}
+
+service updateFirstname {
+    rpc updateFirstnameService (updateFirstnameRequest) returns (updateFirstnameResponse);
+}
+
+// LAST_NAME UPDATE API
+
+message updateLastnameRequest {
+    string id = 1;
+    string last_name = 2;
+}
+
+message updateLastnameResponse {
+    User user = 1;
+}
+
+service updateLastname {
+    rpc updateLastnameService (updateLastnameRequest) returns (updateLastnameResponse);
+}

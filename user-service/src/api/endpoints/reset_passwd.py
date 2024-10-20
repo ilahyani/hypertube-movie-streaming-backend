@@ -12,30 +12,17 @@ from src.grpc import user_pb2 as user_pb2
 router = APIRouter()
 load_dotenv()
 
-@router.post('/')
+@router.get('/')
 async def send_passwdReset_email(request: Request, response: Response):
-    email = None
-    try:
-        body = await request.json()
-    except Exception as e:
-        print(f'Failed to parse body: {e}')
-        return HTTPException(status_code=400, detail={'error': 'Bad Request'})
-    email = body.get('email')
-    if email is None:
-        return HTTPException(status_code=400, detail={'error': 'Email is required to perform this action'})
-
     user = getUserById(request.state.user_id)
     if user is None:
         print('user not found')
         return HTTPException(status_code=400, detail={'error': 'Bad Request'})
-    print('protobuf', user)
-    user = MessageToDict(user, preserving_proto_field_name=True)
-    print('dict', user)
-    if user['user']['email'] != email:
-        raise HTTPException(status_code=400, detail={'error': 'Invalid Request'})
-
+    user = MessageToDict(user[0], preserving_proto_field_name=True)
+    email = user['user']['email']
+    id = user['user']['id']
     payload = {
-        'user_id': user.get('id'),
+        'user_id': id,
         'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=5)
     }
     token = jwt.encode(payload, os.getenv('JWT_SECRET'), algorithm=os.getenv('JWT_ALGORITHM'))
@@ -61,22 +48,12 @@ async def send_passwdReset_email(request: Request, response: Response):
         print("Email sent successfully")
     except Exception as e:
         print(f"Failed to send email: {str(e)}")
+        return JSONResponse(status_code=200, content={'success': False})
 
     return JSONResponse(status_code=200, content={'success': True})
     # return response
 
+#TODO: FINISH THIS WHEN UI IS READY
 @router.post('/reset')
 async def verify_email(request: Request, response: Response):
-    token = request.query_params.get('token')
-    if token is None:
-        return HTTPException(status_code=400, detail={'error': 'Token required'})
-    # isValid, payload = True, jwt.decode()
-    # if isValid is False or payload.user_id is None:
-    #     return HTTPException(status_code=400, detail={'error': 'Invalid Token'})
-    # query = "SELECT * FROM users WHERE id = %s ;"
-    # params = (payload.user_id, )
-    # user_data = await fetch_db(query, params)
-    user = None
-    if user is None:
-        JSONResponse(status_code=200, content={'success': False})
-    return JSONResponse(status_code=200, content={'success': True})
+    return True

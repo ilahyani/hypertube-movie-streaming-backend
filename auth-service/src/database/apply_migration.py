@@ -6,14 +6,6 @@ import psycopg
 load_dotenv()
 
 def generate_migrations_file(migration_files, migration_dir):
-    """
-    Generate a single migrations file from a list of migration files
-    Args:
-        migration_files (list): List of migration file names
-        migration_dir (str): Directory containing the migration files
-    Returns:
-        str: Path to the generated migrations file
-    """
     content = ""
     for mig in migration_files:
         try:
@@ -33,11 +25,6 @@ def generate_migrations_file(migration_files, migration_dir):
     return './migrations.sql'
 
 def get_migrations():
-    """
-    Get the migrations file path or generate it from a directory.
-    Returns:
-        str: Path to the migrations file.
-    """
     migration_data = sys.argv[1:]
     if len(migration_data) == 1:
         if os.path.isfile(migration_data[0]):
@@ -64,7 +51,7 @@ DB_PASSWORD = os.getenv('POSTGRES_PASSWORD')
 DB_PORT = os.getenv('POSTGRES_PORT')
 
 try:
-    with psycopg.connect(f"dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} host={'localhost'} port={DB_PORT}") as conn:
+    with psycopg.connect(f"dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} host={DB_HOST} port={DB_PORT}") as conn:
         with conn.cursor() as cur:
             try:
                 cur.execute(migration_content)
