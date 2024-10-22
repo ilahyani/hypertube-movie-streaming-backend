@@ -10,7 +10,7 @@ exceptiongroup==1.2.2
 fastapi==0.113.0
 fastapi-cli==0.0.5
 grpcio==1.66.2
-grpcio-tools==1.66.2
+grpcio-tools<=1.66.2
 h11==0.14.0
 httpcore==1.0.5
 httptools==0.6.1

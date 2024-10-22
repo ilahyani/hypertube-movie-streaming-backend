@@ -5,6 +5,9 @@ import psycopg
 
 load_dotenv()
 
+#TODO: Handle Rollbacks even if it doesn't happen often
+#TODO: before applying a mig, fetch the mig table and see if it's there already
+
 def generate_migrations_file(migration_files, migration_dir):
     content = ""
     for mig in migration_files:

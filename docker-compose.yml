@@ -5,13 +5,36 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - auth-service/.env
-    # volumes:
-    #   - ./migrations:/docker-entrypoint-initdb.d
+      - data-service/.env
     networks:
       - hyper-network
     volumes:
       - /tmp/db-data:/var/lib/postgresql/data
+    restart: on-failure
+
+  migration:
+    image: python:3.12-slim
+    container_name: migration
+    env_file:
+      - data-service/.env
+    networks:
+      - hyper-network
+    volumes:
+      - ./db-migrations:/tmp/db
+    depends_on:
+      - database
+    command: ["sh", "-c", "/tmp/db/init.sh"]
+    restart: "no"
+
+  data-service:
+    build: ./data-service
+    image: data-service
+    container_name: data-service
+    volumes:
+      - ./data-service:/app
+      - ./grpc:/grpc
+    depends_on:
+      - database
     restart: on-failure
 
   auth-service:
@@ -20,6 +43,7 @@ services:
     container_name: auth-service
     volumes:
       - ./auth-service:/app
+      - ./grpc:/grpc
     ports:
       - 8000:8000
       - 50051:50051
@@ -37,6 +61,7 @@ services:
     container_name: user-service
     volumes:
       - ./user-service:/app
+      - ./grpc:/grpc
     ports:
       - 8001:8000
     env_file:

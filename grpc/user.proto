@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package user;
 
-// GET USER API
-
 message User {
     string id = 1;
     string email = 2;
@@ -12,6 +10,27 @@ message User {
     string last_name = 5;
     string picture = 6;
 }
+
+// PW LOGIN API
+
+// OAUTH LOGIN API
+
+// ADD USER API
+
+message addUserRequest {
+    User user = 1;
+    string oauth_id = 2;
+}
+
+message addUserResponse {
+    User user = 1;
+}
+
+service addUser {
+    rpc addUserService (addUserRequest) returns (addUserResponse);
+}
+
+// GET USER API
 
 message getUserRequest {
     string id = 1;

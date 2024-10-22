@@ -60,7 +60,7 @@ async def update_db(query: str, params):
             raise Exception(f"An account with this {unique_key} already exists")
         raise Exception("Database Failed")
 
-async def add_user_to_db(user: models.UserRegistrationModel, oauth_id: str = None):
+async def add_user_to_db(user, oauth_id: str = None):
     pool = get_db()
     if pool is None:
         print("Database connection pool is not available.")

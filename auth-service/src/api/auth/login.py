@@ -1,7 +1,7 @@
 import bcrypt
 from fastapi import APIRouter, Response, HTTPException
 from pydantic import BaseModel, Field
-from src.database.db import get_user_by_username
+# from src.database.db import get_user_by_username
 from .jw_tokens import sign_tokens
 from .models import UserLoginModel
 
@@ -10,7 +10,7 @@ router = APIRouter()
 @router.post('/')
 async def login(data: UserLoginModel, response: Response):
     try:
-        user = await get_user_by_username(data.username)
+        user = None
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"{e}")
     if user is None:

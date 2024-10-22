@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nuser.proto\x12\x04user\"k\n\x04User\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\x12\x12\n\nfirst_name\x18\x04 \x01(\t\x12\x11\n\tlast_name\x18\x05 \x01(\t\x12\x0f\n\x07picture\x18\x06 \x01(\t\"\x1c\n\x0egetUserRequest\x12\n\n\x02id\x18\x01 \x01(\t\"+\n\x0fgetUserResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"#\n\x12searchUsersRequest\x12\r\n\x05query\x18\x01 \x01(\t\"0\n\x13searchUsersResponse\x12\x19\n\x05users\x18\x01 \x03(\x0b\x32\n.user.User\"5\n\x15updateUsernameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x10\n\x08username\x18\x02 \x01(\t\"2\n\x16updateUsernameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"/\n\x12updateEmailRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\"/\n\x13updateEmailResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"8\n\x16updateFirstnameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\"3\n\x17updateFirstnameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"6\n\x15updateLastnameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\tlast_name\x18\x02 \x01(\t\"2\n\x16updateLastnameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User2H\n\x07getUser\x12=\n\x0egetUserService\x12\x14.user.getUserRequest\x1a\x15.user.getUserResponse2X\n\x0bsearchUsers\x12I\n\x12searchUsersService\x12\x18.user.searchUsersRequest\x1a\x19.user.searchUsersResponse2d\n\x0eupdateUsername\x12R\n\x15updateUsernameService\x12\x1b.user.updateUsernameRequest\x1a\x1c.user.updateUsernameResponse2X\n\x0bupdateEmail\x12I\n\x12updateEmailService\x12\x18.user.updateEmailRequest\x1a\x19.user.updateEmailResponse2h\n\x0fupdateFirstname\x12U\n\x16updateFirstnameService\x12\x1c.user.updateFirstnameRequest\x1a\x1d.user.updateFirstnameResponse2d\n\x0eupdateLastname\x12R\n\x15updateLastnameService\x12\x1b.user.updateLastnameRequest\x1a\x1c.user.updateLastnameResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nuser.proto\x12\x04user\"k\n\x04User\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\x12\x12\n\nfirst_name\x18\x04 \x01(\t\x12\x11\n\tlast_name\x18\x05 \x01(\t\x12\x0f\n\x07picture\x18\x06 \x01(\t\"<\n\x0e\x61\x64\x64UserRequest\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\x12\x10\n\x08oauth_id\x18\x02 \x01(\t\"+\n\x0f\x61\x64\x64UserResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"\x1c\n\x0egetUserRequest\x12\n\n\x02id\x18\x01 \x01(\t\"+\n\x0fgetUserResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"#\n\x12searchUsersRequest\x12\r\n\x05query\x18\x01 \x01(\t\"0\n\x13searchUsersResponse\x12\x19\n\x05users\x18\x01 \x03(\x0b\x32\n.user.User\"5\n\x15updateUsernameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x10\n\x08username\x18\x02 \x01(\t\"2\n\x16updateUsernameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"/\n\x12updateEmailRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\"/\n\x13updateEmailResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"8\n\x16updateFirstnameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\"3\n\x17updateFirstnameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"6\n\x15updateLastnameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\tlast_name\x18\x02 \x01(\t\"2\n\x16updateLastnameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User2H\n\x07\x61\x64\x64User\x12=\n\x0e\x61\x64\x64UserService\x12\x14.user.addUserRequest\x1a\x15.user.addUserResponse2H\n\x07getUser\x12=\n\x0egetUserService\x12\x14.user.getUserRequest\x1a\x15.user.getUserResponse2X\n\x0bsearchUsers\x12I\n\x12searchUsersService\x12\x18.user.searchUsersRequest\x1a\x19.user.searchUsersResponse2d\n\x0eupdateUsername\x12R\n\x15updateUsernameService\x12\x1b.user.updateUsernameRequest\x1a\x1c.user.updateUsernameResponse2X\n\x0bupdateEmail\x12I\n\x12updateEmailService\x12\x18.user.updateEmailRequest\x1a\x19.user.updateEmailResponse2h\n\x0fupdateFirstname\x12U\n\x16updateFirstnameService\x12\x1c.user.updateFirstnameRequest\x1a\x1d.user.updateFirstnameResponse2d\n\x0eupdateLastname\x12R\n\x15updateLastnameService\x12\x1b.user.updateLastnameRequest\x1a\x1c.user.updateLastnameResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,40 +33,46 @@ if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_USER']._serialized_start=20
   _globals['_USER']._serialized_end=127
-  _globals['_GETUSERREQUEST']._serialized_start=129
-  _globals['_GETUSERREQUEST']._serialized_end=157
-  _globals['_GETUSERRESPONSE']._serialized_start=159
-  _globals['_GETUSERRESPONSE']._serialized_end=202
-  _globals['_SEARCHUSERSREQUEST']._serialized_start=204
-  _globals['_SEARCHUSERSREQUEST']._serialized_end=239
-  _globals['_SEARCHUSERSRESPONSE']._serialized_start=241
-  _globals['_SEARCHUSERSRESPONSE']._serialized_end=289
-  _globals['_UPDATEUSERNAMEREQUEST']._serialized_start=291
-  _globals['_UPDATEUSERNAMEREQUEST']._serialized_end=344
-  _globals['_UPDATEUSERNAMERESPONSE']._serialized_start=346
-  _globals['_UPDATEUSERNAMERESPONSE']._serialized_end=396
-  _globals['_UPDATEEMAILREQUEST']._serialized_start=398
-  _globals['_UPDATEEMAILREQUEST']._serialized_end=445
-  _globals['_UPDATEEMAILRESPONSE']._serialized_start=447
-  _globals['_UPDATEEMAILRESPONSE']._serialized_end=494
-  _globals['_UPDATEFIRSTNAMEREQUEST']._serialized_start=496
-  _globals['_UPDATEFIRSTNAMEREQUEST']._serialized_end=552
-  _globals['_UPDATEFIRSTNAMERESPONSE']._serialized_start=554
-  _globals['_UPDATEFIRSTNAMERESPONSE']._serialized_end=605
-  _globals['_UPDATELASTNAMEREQUEST']._serialized_start=607
-  _globals['_UPDATELASTNAMEREQUEST']._serialized_end=661
-  _globals['_UPDATELASTNAMERESPONSE']._serialized_start=663
-  _globals['_UPDATELASTNAMERESPONSE']._serialized_end=713
-  _globals['_GETUSER']._serialized_start=715
-  _globals['_GETUSER']._serialized_end=787
-  _globals['_SEARCHUSERS']._serialized_start=789
-  _globals['_SEARCHUSERS']._serialized_end=877
-  _globals['_UPDATEUSERNAME']._serialized_start=879
-  _globals['_UPDATEUSERNAME']._serialized_end=979
-  _globals['_UPDATEEMAIL']._serialized_start=981
-  _globals['_UPDATEEMAIL']._serialized_end=1069
-  _globals['_UPDATEFIRSTNAME']._serialized_start=1071
-  _globals['_UPDATEFIRSTNAME']._serialized_end=1175
-  _globals['_UPDATELASTNAME']._serialized_start=1177
-  _globals['_UPDATELASTNAME']._serialized_end=1277
+  _globals['_ADDUSERREQUEST']._serialized_start=129
+  _globals['_ADDUSERREQUEST']._serialized_end=189
+  _globals['_ADDUSERRESPONSE']._serialized_start=191
+  _globals['_ADDUSERRESPONSE']._serialized_end=234
+  _globals['_GETUSERREQUEST']._serialized_start=236
+  _globals['_GETUSERREQUEST']._serialized_end=264
+  _globals['_GETUSERRESPONSE']._serialized_start=266
+  _globals['_GETUSERRESPONSE']._serialized_end=309
+  _globals['_SEARCHUSERSREQUEST']._serialized_start=311
+  _globals['_SEARCHUSERSREQUEST']._serialized_end=346
+  _globals['_SEARCHUSERSRESPONSE']._serialized_start=348
+  _globals['_SEARCHUSERSRESPONSE']._serialized_end=396
+  _globals['_UPDATEUSERNAMEREQUEST']._serialized_start=398
+  _globals['_UPDATEUSERNAMEREQUEST']._serialized_end=451
+  _globals['_UPDATEUSERNAMERESPONSE']._serialized_start=453
+  _globals['_UPDATEUSERNAMERESPONSE']._serialized_end=503
+  _globals['_UPDATEEMAILREQUEST']._serialized_start=505
+  _globals['_UPDATEEMAILREQUEST']._serialized_end=552
+  _globals['_UPDATEEMAILRESPONSE']._serialized_start=554
+  _globals['_UPDATEEMAILRESPONSE']._serialized_end=601
+  _globals['_UPDATEFIRSTNAMEREQUEST']._serialized_start=603
+  _globals['_UPDATEFIRSTNAMEREQUEST']._serialized_end=659
+  _globals['_UPDATEFIRSTNAMERESPONSE']._serialized_start=661
+  _globals['_UPDATEFIRSTNAMERESPONSE']._serialized_end=712
+  _globals['_UPDATELASTNAMEREQUEST']._serialized_start=714
+  _globals['_UPDATELASTNAMEREQUEST']._serialized_end=768
+  _globals['_UPDATELASTNAMERESPONSE']._serialized_start=770
+  _globals['_UPDATELASTNAMERESPONSE']._serialized_end=820
+  _globals['_ADDUSER']._serialized_start=822
+  _globals['_ADDUSER']._serialized_end=894
+  _globals['_GETUSER']._serialized_start=896
+  _globals['_GETUSER']._serialized_end=968
+  _globals['_SEARCHUSERS']._serialized_start=970
+  _globals['_SEARCHUSERS']._serialized_end=1058
+  _globals['_UPDATEUSERNAME']._serialized_start=1060
+  _globals['_UPDATEUSERNAME']._serialized_end=1160
+  _globals['_UPDATEEMAIL']._serialized_start=1162
+  _globals['_UPDATEEMAIL']._serialized_end=1250
+  _globals['_UPDATEFIRSTNAME']._serialized_start=1252
+  _globals['_UPDATEFIRSTNAME']._serialized_end=1356
+  _globals['_UPDATELASTNAME']._serialized_start=1358
+  _globals['_UPDATELASTNAME']._serialized_end=1458
 # @@protoc_insertion_point(module_scope)
