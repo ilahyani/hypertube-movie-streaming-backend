@@ -1,7 +1,7 @@
 import psycopg
 import bcrypt
 from src.database.db_pool import DatabasePool
-from src.api.auth import models
+# from src.api.auth import models
 
 def get_db():
     try:

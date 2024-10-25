@@ -9,4 +9,4 @@ until pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USER; do
   sleep 2
 done
 
-python3 /tmp/db/apply_migration.py /tmp/db/migrations
+python3 /tmp/db/run_migration.py /tmp/db/migrations

@@ -1,3 +1,3 @@
-from grpc import grpc_server as server
+from grpc_files import grpc_server as server
 
 server.serve()

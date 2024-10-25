@@ -1,7 +1,7 @@
-import grpc.user_pb2 as user_pb2
-import grpc.user_pb2_grpc as user_pb2_grpc
+import grpc_files.user_pb2 as user_pb2
+import grpc_files.user_pb2_grpc as user_pb2_grpc
 import grpc
-# from concurrent import futures
+from concurrent import futures
 # import asyncio
 # from .database.db import get_user_by_id, update_username, update_email, update_firstname, update_lastname, search_users, add_user_to_db, fetch_db, get_user_dict
 import database.db as db
@@ -115,7 +115,7 @@ class searchUsersServicer(user_pb2_grpc.searchUsersServicer):
         return user_pb2.searchUsersResponse(users=results)
 
 class addUserServicer(user_pb2_grpc.addUserServicer):
-    async def addUserService(self, request, response):
+    async def addUserService(self, request, context):
         if not request.user:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
@@ -132,13 +132,16 @@ class addUserServicer(user_pb2_grpc.addUserServicer):
 
 
 def serve():
+
     server = grpc.server(futures.ThreadPoolExecutor())
+
     user_pb2_grpc.add_getUserServicer_to_server(getUserServicer(), server)
     user_pb2_grpc.add_updateUsernameServicer_to_server(updateUsernameServicer(), server)
     user_pb2_grpc.add_updateEmailServicer_to_server(updateEmailServicer(), server)
     user_pb2_grpc.add_updateFirstnameServicer_to_server(updateFirstnameServicer(), server)
     user_pb2_grpc.add_updateLastnameServicer_to_server(updateLastnameServicer(), server)
     user_pb2_grpc.add_searchUsersServicer_to_server(searchUsersServicer(), server)
+    user_pb2_grpc.add_addUserServicer_to_server(addUserServicer(), server)
 
     #TODO: grpc port env variable
     server.add_insecure_port('[::]:50051')
