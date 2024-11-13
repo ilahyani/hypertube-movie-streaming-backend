@@ -84,9 +84,10 @@ async def add_user_to_db(user, oauth_id: str = None):
             cur.execute(query, values)
             cur.execute("SELECT * FROM users WHERE username = %s ;", (user['username'], ))
             registered_user = cur.fetchone()
-            registered_user = get_user_dict(registered_user)
             conn.commit()
-            del registered_user['passwd'], registered_user['oauth_id']
+            registered_user = get_user_dict(registered_user)
+            if registered_user is not None:
+                del registered_user['passwd'], registered_user['oauth_id']
             return registered_user
     except psycopg.Error as e:
         print(f'add_user_to_db() failed: {e}')
@@ -100,6 +101,7 @@ async def add_user_to_db(user, oauth_id: str = None):
         raise Exception("Database Failed to add user")
     finally:
         pool.putconn(conn)
+
 async def get_user_by_username(username: str):
     user = None
     data = await fetch_db("SELECT * FROM users WHERE username = %s ;", (username, ))

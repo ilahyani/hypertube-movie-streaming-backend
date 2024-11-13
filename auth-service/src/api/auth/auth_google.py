@@ -6,7 +6,10 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from dotenv import load_dotenv
 from .jw_tokens import sign_tokens
 from .register_user import register_user
+import logging
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='../hyper.log', encoding='utf-8', level=logging.DEBUG)
 load_dotenv()
 router = APIRouter()
 
@@ -52,7 +55,7 @@ async def gl_auth_callback(request: Request, response: Response):
     username = user_info.get('name').replace(" ", "_").lower()
     picture = user_info.get('picture')
     try:
-        user = await register_user(oauth_id, email, first_name, last_name, username, picture)
+        user = register_user(oauth_id, email, first_name, last_name, username, picture)
     except Exception as e:
         print('[G_OAUTH]', e)
         return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})

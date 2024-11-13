@@ -13,9 +13,52 @@ message User {
 
 // PW LOGIN API
 
-// OAUTH LOGIN API
+message Login_User {
+    string id = 1;
+    string email = 2;
+    string username = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string passwd = 6;
+    string picture = 7;
+}
 
-// ADD USER API
+message loginRequest {
+    string username = 1;
+}
+
+message loginResponse {
+    Login_User user = 1;
+}
+
+service login {
+    rpc loginService (loginRequest) returns (loginResponse);
+}
+
+// SIGNUP API
+
+message Signup_User {
+    string email = 1;
+    string first_name = 2;
+    string last_name = 3;
+    string username = 4;
+    string passwd = 5;
+    string picture = 6;
+}
+
+message signupRequest {
+    Signup_User user = 1;
+}
+
+message signupResponse {
+    User user = 1;
+}
+
+service signup {
+    rpc signupService (signupRequest) returns (signupResponse);
+}
+
+// OAUTH API
 
 message addUserRequest {
     User user = 1;

@@ -28,31 +28,17 @@ async def upload_avatar_to_s3(username, url):
 
 #TODO: CONFIRM EMAILS
 
-async def register_user(oauth_id: str, email: str, first_name: str, last_name: str, username: str, picture: str):
-    # query = "SELECT * FROM users WHERE oauth_id = %s ;"
-    # user_data = await fetch_db(query, (oauth_id, ))
-    # if user_data is not None:
-    #     user = get_user_dict(user_data)
-    #     del user['passwd'], user['oauth_id']
-    #     return user
-    # # picture_s3_path = await upload_avatar_to_s3(username, picture)
-    # user = await add_user_to_db({
-    #     'email': email,
-    #     'first_name': first_name,
-    #     'last_name': last_name,
-    #     'username': username,
-    #     'picture': picture
-    # }, oauth_id)
-    user, error = addUser(({
-        'id': '',
+def register_user(oauth_id: str, email: str, first_name: str, last_name: str, username: str, picture: str):
+    user_msg, error = addUser({
+        'id': '0',
         'email': email,
         'first_name': first_name,
         'last_name': last_name,
         'username': username,
         'picture': picture
-    }, oauth_id))
-    if user is None:
+    }, oauth_id)
+    if user_msg is None:
         print(f'[register_user failed]: {error}')
         return None
-    user = MessageToDict(user, preserving_proto_field_name=True)
-    return user
+    user_msg = MessageToDict(user_msg, preserving_proto_field_name=True)
+    return user_msg

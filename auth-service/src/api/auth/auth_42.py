@@ -52,7 +52,7 @@ async def ft_auth_callback(request: Request, response: Response):
     username = user_info.get('login').lower()
     picture = user_info.get('image')['link']
     try:
-        user = await register_user(oauth_id, email, first_name, last_name, username, picture)
+        user = register_user(oauth_id, email, first_name, last_name, username, picture)
     except Exception as e:
         print('[42_OAUTH]', e)
         return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})

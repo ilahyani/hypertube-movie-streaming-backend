@@ -34,7 +34,9 @@ services:
       - ./data-service:/app
       - ./grpc:/grpc
     depends_on:
-      - database
+      - migration
+    networks:
+      - hyper-network
     restart: on-failure
 
   auth-service:
@@ -46,13 +48,12 @@ services:
       - ./grpc:/grpc
     ports:
       - 8000:8000
-      - 50051:50051
     env_file:
       - ./auth-service/.env
     networks:
       - hyper-network
     depends_on:
-      - database
+      - migration
     restart: on-failure
 
   user-service:
@@ -69,7 +70,7 @@ services:
     networks:
       - hyper-network
     depends_on:
-      - database
+      - migration
     restart: on-failure
 
 networks:
