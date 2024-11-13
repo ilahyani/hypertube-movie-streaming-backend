@@ -10,7 +10,7 @@ exceptiongroup==1.2.2
 fastapi==0.113.0
 fastapi-cli==0.0.5
 grpcio==1.66.2
-grpcio-tools==1.66.2
+grpcio-tools<=1.66.2
 h11==0.14.0
 httpcore==1.0.5
 httptools==0.6.1
@@ -21,7 +21,7 @@ mangum==0.17.0
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
-protobuf==5.28.2
+protobuf==5.27.2
 pycparser==2.22
 pydantic==2.9.0
 pydantic_core==2.23.2

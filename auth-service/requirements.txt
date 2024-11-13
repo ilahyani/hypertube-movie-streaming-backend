@@ -10,7 +10,7 @@ email_validator==2.2.0
 fastapi==0.112.1
 fastapi-cli==0.0.5
 grpcio==1.66.2
-grpcio-tools==1.66.2
+grpcio-tools<=1.66.2
 h11==0.14.0
 httpcore==1.0.5
 httptools==0.6.1
@@ -22,7 +22,7 @@ mangum==0.17.0
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
-protobuf==5.28.2
+protobuf==5.27.2
 psycopg==3.2.1
 psycopg-binary==3.2.1
 psycopg-pool==3.2.2

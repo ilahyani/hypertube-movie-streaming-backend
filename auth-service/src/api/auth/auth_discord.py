@@ -48,7 +48,7 @@ async def discord_auth(request: Request, response: Response):
     username = user_info.get('username').lower()
     avatar = f'https://cdn.discordapp.com/avatars/{user_info.get('id')}/{user_info.get('avatar')}?size=256'
     try:
-        user = await register_user(oauth_id, email, name, name, username, avatar)
+        user = register_user(oauth_id, email, name, name, username, avatar)
     except Exception as e:
         print('[D_OAUTH]', e)
         return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})

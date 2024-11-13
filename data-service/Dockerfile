@@ -10,14 +10,10 @@ COPY ./entrypoint.sh .
 
 RUN pip install --no-cache-dir -r ./requirements.txt
 
-# RUN python -m grpc_tools.protoc -I=. --python_out=./src/grpc --grpc_python_out=./src/grpc user.proto
+# RUN python3 -m grpc_tools.protoc -I=. --python_out=./src/grpc --grpc_python_out=./src/grpc user.proto
 
 RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT [ "./entrypoint.sh" ]
 
-# # DEV
-# CMD ["fastapi", "dev", "src/main.py", "--host", "0.0.0.0"]
-
-# PROD
-# CMD ["fastapi", "run", "src/main.py", "--host", "0.0.0.0"]
+# CMD ["python3", "dev", "src/main.py"]

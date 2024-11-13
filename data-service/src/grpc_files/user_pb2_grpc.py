@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from src.grpc import user_pb2 as user__pb2
+from src.grpc_files import user_pb2 as user__pb2
 
 GRPC_GENERATED_VERSION = '1.66.2'
 GRPC_VERSION = grpc.__version__
