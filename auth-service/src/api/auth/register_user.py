@@ -41,4 +41,4 @@ def register_user(oauth_id: str, email: str, first_name: str, last_name: str, us
         print(f'[register_user failed]: {error}')
         return None
     user_msg = MessageToDict(user_msg, preserving_proto_field_name=True)
-    return user_msg
+    return user_msg['user']
