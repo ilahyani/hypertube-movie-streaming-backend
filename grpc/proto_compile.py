@@ -17,12 +17,6 @@ commands = [
         "--grpc_python_out=../data-service/src/grpc_files",
         "user.proto"
     ],
-    # [
-    #     "sed",
-    #     "-i",
-    #     "\'s/import user_pb2 as user__pb2/from src.grpc_files import user_pb2 as user__pb2/g\'",
-    #     "/app/src/grpc_files/user_pb2_grpc.py"
-    # ],
     [
         "python3", "-m", "grpc_tools.protoc",
         "-I=.",

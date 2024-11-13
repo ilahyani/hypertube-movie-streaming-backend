@@ -9,8 +9,8 @@ import logging
 
 load_dotenv()
 
-logger = logging.getLogger(__name__)
 logging.basicConfig(filename='hyper.log', encoding='utf-8', level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 #TODO: did too many copy pasta double check req and res objects
 
@@ -25,13 +25,13 @@ def user_dict_to_pb2_user(user_dict):
     )
 
 class getUserServicer(user_pb2_grpc.getUserServicer):
-    async def getUserService(self, request, context):
+    def getUserService(self, request, context):
         logger.info(f'Received getUserService request: {request}')
         if not request.id:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('id is required to fetch the user')
             return user_pb2.getUserResponse()
-        user = await db.get_user_by_id(request.id)
+        user = asyncio.run(db.get_user_by_id(request.id))
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('invalid user id')
@@ -42,14 +42,14 @@ class getUserServicer(user_pb2_grpc.getUserServicer):
         return user_pb2.getUserResponse(user=user_response)
 
 class updateUsernameServicer(user_pb2_grpc.updateUsernameServicer):
-    async def updateUsernameService(self, request, context):
+    def updateUsernameService(self, request, context):
         logger.info(f'Received updateUsernameService request: {request}')
         if not request.id or not request.username:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.updateUsernameResponse()
         try:
-            user = await db.update_username(request.id, request.username)
+            user = asyncio.run(db.update_username(request.id, request.username))
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(f'Failed to update username: {e}')
@@ -64,13 +64,13 @@ class updateUsernameServicer(user_pb2_grpc.updateUsernameServicer):
         return user_pb2.updateUsernameResponse(user=user_response)
 
 class updateEmailServicer(user_pb2_grpc.updateEmailServicer):
-    async def updateEmailService(self, request, context):
+    def updateEmailService(self, request, context):
         logger.info(f'Received updateEmailServicer request: {request}')
         if not request.id or not request.email:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.updateEmailResponse()
-        user = await db.update_email(request.id, request.email)
+        user = asyncio.run(db.update_email(request.id, request.email))
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
@@ -81,13 +81,13 @@ class updateEmailServicer(user_pb2_grpc.updateEmailServicer):
         return user_pb2.updateEmailResponse(user=user_response)
 
 class updateFirstnameServicer(user_pb2_grpc.updateFirstnameServicer):
-    async def updateFirstnameService(self, request, context):
+    def updateFirstnameService(self, request, context):
         logger.info(f'Received updateFirstnameServicer request: {request}')
         if not request.id or not request.first_name:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.updateFirstnameResponse()
-        user = await db.update_firstname(request.id, request.first_name)
+        user = asyncio.run(db.update_firstname(request.id, request.first_name))
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
@@ -98,13 +98,13 @@ class updateFirstnameServicer(user_pb2_grpc.updateFirstnameServicer):
         return user_pb2.updateFirstnameResponse(user=user_response)
 
 class updateLastnameServicer(user_pb2_grpc.updateLastnameServicer):
-    async def updateLastnameService(self, request, context):
+    def updateLastnameService(self, request, context):
         logger.info(f'Received updateLastnameService request: {request}')
         if not request.id or not request.last_name:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.updateLastnameResponse()
-        user = await update_lastname(request.id, request.last_name)
+        user = asyncio.run(db.update_lastname(request.id, request.last_name))
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
@@ -115,14 +115,14 @@ class updateLastnameServicer(user_pb2_grpc.updateLastnameServicer):
         return user_pb2.updateLastnameResponse(user=user_response)
 
 class searchUsersServicer(user_pb2_grpc.searchUsersServicer):
-    async def searchUsersService(self, request, context):
+    def searchUsersService(self, request, context):
         logger.info(f'Received searchUsersServicer request: {request}')
         if not request.query:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.searchUsersResponse()
-        users_data = await db.search_users(request.query)
-        logger.info(f'search_users: {user}')
+        users_data = asyncio.run(db.search_users(request.query))
+        logger.info(f'search_users: {users_data}')
         results = []
         try:
             for user in users_data:
@@ -209,7 +209,6 @@ class loginServicer(user_pb2_grpc.loginServicer):
             context.set_details('Operation Failed: invalid data')
             return user_pb2.loginResponse()
         logger.info(f'get_user_by_username: {res}')
-        # user = user_dict_to_pb2_user(res)
         user = user_pb2.Login_User(
             id=res['id'],
             email=res['email'],

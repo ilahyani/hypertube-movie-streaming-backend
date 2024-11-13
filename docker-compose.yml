@@ -37,7 +37,7 @@ services:
       - migration
     networks:
       - hyper-network
-    restart: on-failure
+    restart: always
 
   auth-service:
     build: ./auth-service

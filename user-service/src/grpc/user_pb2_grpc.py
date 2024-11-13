@@ -25,6 +25,150 @@ if _version_not_supported:
     )
 
 
+class loginStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.loginService = channel.unary_unary(
+                '/user.login/loginService',
+                request_serializer=user__pb2.loginRequest.SerializeToString,
+                response_deserializer=user__pb2.loginResponse.FromString,
+                _registered_method=True)
+
+
+class loginServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def loginService(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_loginServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'loginService': grpc.unary_unary_rpc_method_handler(
+                    servicer.loginService,
+                    request_deserializer=user__pb2.loginRequest.FromString,
+                    response_serializer=user__pb2.loginResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'user.login', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('user.login', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class login(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def loginService(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.login/loginService',
+            user__pb2.loginRequest.SerializeToString,
+            user__pb2.loginResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class signupStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.signupService = channel.unary_unary(
+                '/user.signup/signupService',
+                request_serializer=user__pb2.signupRequest.SerializeToString,
+                response_deserializer=user__pb2.signupResponse.FromString,
+                _registered_method=True)
+
+
+class signupServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def signupService(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_signupServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'signupService': grpc.unary_unary_rpc_method_handler(
+                    servicer.signupService,
+                    request_deserializer=user__pb2.signupRequest.FromString,
+                    response_serializer=user__pb2.signupResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'user.signup', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('user.signup', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class signup(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def signupService(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.signup/signupService',
+            user__pb2.signupRequest.SerializeToString,
+            user__pb2.signupResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
 class addUserStub(object):
     """Missing associated documentation comment in .proto file."""
 
