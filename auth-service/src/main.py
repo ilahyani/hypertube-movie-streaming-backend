@@ -24,20 +24,3 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         status_code = 400,
         content = { "error":  err_msg }
     )
-
-##TODO: grpc stops after 4 to 5 exceptions
-
-# async def start_grpc_server():
-#     while True:
-#         try:
-#             grpc_thread = threading.Thread(target=grpc_server.serve, daemon=True)
-#             grpc_thread.start()
-#             while grpc_thread.is_alive():
-#                 await asyncio.sleep(5)
-#         except Exception as e:
-#             print(f"gRPC server error: {e}")
-#         print("gRPC server stopped. Restarting...")
-#         time.sleep(1)
-
-# loop = asyncio.get_event_loop()
-# loop.create_task(start_grpc_server())

@@ -6,13 +6,12 @@ import grpc
 import asyncio
 import database.db as db
 import logging
+import os
 
 load_dotenv()
 
 logging.basicConfig(filename='hyper.log', encoding='utf-8', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
-#TODO: did too many copy pasta double check req and res objects
 
 def user_dict_to_pb2_user(user_dict):
     return user_pb2.User(
@@ -31,7 +30,13 @@ class getUserServicer(user_pb2_grpc.getUserServicer):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('id is required to fetch the user')
             return user_pb2.getUserResponse()
-        user = asyncio.run(db.get_user_by_id(request.id))
+        try:
+            user = asyncio.run(db.get_user_by_id(request.id))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[getUserService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return user_pb2.getUserResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('invalid user id')
@@ -52,7 +57,8 @@ class updateUsernameServicer(user_pb2_grpc.updateUsernameServicer):
             user = asyncio.run(db.update_username(request.id, request.username))
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            context.set_details(f'Failed to update username: {e}')
+            context.set_details(f'[updateUsernameService] database exception: {e}')
+            logger.info(f'database exception: {e}')
             return user_pb2.getUserResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
@@ -70,7 +76,13 @@ class updateEmailServicer(user_pb2_grpc.updateEmailServicer):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.updateEmailResponse()
-        user = asyncio.run(db.update_email(request.id, request.email))
+        try:
+            user = asyncio.run(db.update_email(request.id, request.email))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[updateEmailService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return user_pb2.updateEmailResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
@@ -87,7 +99,13 @@ class updateFirstnameServicer(user_pb2_grpc.updateFirstnameServicer):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.updateFirstnameResponse()
-        user = asyncio.run(db.update_firstname(request.id, request.first_name))
+        try:
+            user = asyncio.run(db.update_firstname(request.id, request.first_name))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[updateFirstnameService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return user_pb2.updateFirstnameResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
@@ -104,7 +122,13 @@ class updateLastnameServicer(user_pb2_grpc.updateLastnameServicer):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.updateLastnameResponse()
-        user = asyncio.run(db.update_lastname(request.id, request.last_name))
+        try:
+            user = asyncio.run(db.update_lastname(request.id, request.last_name))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[updateLastnameService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return user_pb2.updateLastnameResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
@@ -121,10 +145,14 @@ class searchUsersServicer(user_pb2_grpc.searchUsersServicer):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.searchUsersResponse()
-        users_data = asyncio.run(db.search_users(request.query))
-        logger.info(f'search_users: {users_data}')
-        results = []
         try:
+            users_data = asyncio.run(db.search_users(request.query))
+            if users_data is None:
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                context.set_details('Operation Failed')
+                return user_pb2.searchUsersResponse()
+            logger.info(f'search_users: {users_data}')
+            results = []
             for user in users_data:
                 user_message = user_pb2.User(
                     id=user[0],
@@ -135,12 +163,13 @@ class searchUsersServicer(user_pb2_grpc.searchUsersServicer):
                     picture=user[6],
                 )
                 results.append(user_message)
-            logger.info(f'searchUsersService succeeded: {results}')
-            return user_pb2.searchUsersResponse(users=results)
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            context.set_details(f'searchUsersService Failed: {e}')
-            return user_pb2.getUserResponse()
+            context.set_details(f'[searchUsersService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return user_pb2.searchUsersResponse()
+        logger.info(f'searchUsersService succeeded: {results}')
+        return user_pb2.searchUsersResponse(users=results)
 
 class addUserServicer(user_pb2_grpc.addUserServicer):
     def addUserService(self, request, context):
@@ -156,13 +185,19 @@ class addUserServicer(user_pb2_grpc.addUserServicer):
                 user = db.get_user_dict(user_data)
                 del user['passwd'], user['oauth_id']
                 return user_pb2.addUserResponse(user=user)
-        res = asyncio.run(db.add_user_to_db({
-            'email': request.user.email,
-            'username': request.user.username,
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-            'picture': request.user.picture,
-        }, request.oauth_id))
+        try:
+            res = asyncio.run(db.add_user_to_db({
+                'email': request.user.email,
+                'username': request.user.username,
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'picture': request.user.picture,
+            }, request.oauth_id))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[addUserServicer] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return user_pb2.addUserResponse()
         if res is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
@@ -179,14 +214,20 @@ class signupServicer(user_pb2_grpc.signupServicer):
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return user_pb2.signupResponse()
-        res = asyncio.run(db.add_user_to_db({
-            'email': request.user.email,
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-            'username': request.user.username,
-            'passwd': request.user.passwd,
-            'picture': request.user.picture,
-        }))
+        try:
+            res = asyncio.run(db.add_user_to_db({
+                'email': request.user.email,
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'username': request.user.username,
+                'passwd': request.user.passwd,
+                'picture': request.user.picture,
+            }))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[signupService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return user_pb2.signupResponse()
         if res is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
@@ -209,21 +250,27 @@ class loginServicer(user_pb2_grpc.loginServicer):
             context.set_details('Operation Failed: invalid data')
             return user_pb2.loginResponse()
         logger.info(f'get_user_by_username: {res}')
-        user = user_pb2.Login_User(
-            id=res['id'],
-            email=res['email'],
-            username=res['username'],
-            first_name=res['first_name'],
-            last_name=res['last_name'],
-            passwd=res['passwd'],
-            picture=res['picture'],
-        )
+        try:
+            user = user_pb2.Login_User(
+                id=res['id'],
+                email=res['email'],
+                username=res['username'],
+                first_name=res['first_name'],
+                last_name=res['last_name'],
+                passwd=res['passwd'],
+                picture=res['picture'],
+            )
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[loginServicer] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return user_pb2.loginResponse()
         logger.info(f'loginService succeeded: {user}')
         return user_pb2.loginResponse(user=user)
 
 def serve():
 
-    server = grpc.server(futures.ThreadPoolExecutor())
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
 
     user_pb2_grpc.add_getUserServicer_to_server(getUserServicer(), server)
     user_pb2_grpc.add_updateUsernameServicer_to_server(updateUsernameServicer(), server)
@@ -235,8 +282,7 @@ def serve():
     user_pb2_grpc.add_signupServicer_to_server(signupServicer(), server)
     user_pb2_grpc.add_loginServicer_to_server(loginServicer(), server)
 
-    #TODO: grpc port env variable
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port(f'[::]:{os.getenv('GRPC_SERVER_PORT')}')
     server.start()
-    print('gRPC server started on 50051')
+    logger.info(f'gRPC server started on {os.getenv('GRPC_SERVER_PORT')}')
     server.wait_for_termination()
