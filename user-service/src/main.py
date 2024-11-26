@@ -8,6 +8,6 @@ app.include_router(user_api.router, prefix='/api/user')
 
 app.middleware('http')(jwt_middleware)
 
-@app.get('/')
+@app.get('/api/user')
 def root():
     return { 'message': 'User Service is LIIIVE' }

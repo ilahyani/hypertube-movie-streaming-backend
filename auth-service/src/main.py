@@ -12,7 +12,7 @@ app = FastAPI()
 
 app.include_router(auth_api.router, prefix='/api/auth')
 
-@app.get("/")
+@app.get("/api/auth")
 def root():
     return { "message": "Auth Service IS UP!" }
 
