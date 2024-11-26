@@ -202,3 +202,5 @@ terraform.rc
 
 *.pem
 .DS_Store
+
+node_modules

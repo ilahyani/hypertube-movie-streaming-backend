@@ -49,6 +49,7 @@ services:
     depends_on:
       - auth-service
       - user-service
+      - stream-service
     restart: always
   
   auth-service:
@@ -58,8 +59,6 @@ services:
     volumes:
       - ./auth-service:/app
       - ./grpc:/grpc
-    # ports:
-    #   - 8000:8000
     env_file:
       - ./auth-service/.env
     networks:
@@ -81,6 +80,22 @@ services:
       - hyper-network
     depends_on:
       - migration
+    restart: on-failure
+
+  stream-service:
+    build: ./stream-service
+    image: stream-service
+    container_name: stream-service
+    volumes:
+      - ./stream-service:/app
+      - /app/node_modules
+      - ./grpc:/grpc
+    env_file:
+      - ./stream-service/.env
+    networks:
+      - hyper-network
+    # ports:
+    #   - 8000:8000
     restart: on-failure
 
 networks:
