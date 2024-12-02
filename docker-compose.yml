@@ -94,8 +94,6 @@ services:
       - ./stream-service/.env
     networks:
       - hyper-network
-    # ports:
-    #   - 8000:8000
     restart: on-failure
 
 networks:
