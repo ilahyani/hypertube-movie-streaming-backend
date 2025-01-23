@@ -3,13 +3,10 @@ const torrentStream = require('torrent-stream')
 const fs = require('fs')
 const EventEmitter = require('node:events')
 
-// const chunksTracker = new Map()
 const saved_chunks = new Set()
 const eventEmitter = new EventEmitter()
-
 router.get('/', async (req, res) => {
     const range = req.headers.range
-    // console.log('params', req.query)
     const { user_id, hash } = req.query
     if (!range) {
         return res.status(416).json({error: "Missing Range"})
@@ -20,9 +17,6 @@ router.get('/', async (req, res) => {
     if (!hash) {
         return res.status(400).json({error: "Missing Movie Hash"})
     }
-    // if (!chunksTracker.has(user_id)) {
-    //     chunksTracker.set(user_id, [])
-    // }
     try {
         const magnet = `magnet:?xt=urn:btih:${hash}`
         const engine = torrentStream(magnet, {
@@ -40,6 +34,7 @@ router.get('/', async (req, res) => {
                 'udp://tracker.ccc.de:80'
             ]
         })
+
         let file_path, buffer_size, start, end, chunk_size, first_chunk, last_chunk, requested = true
         engine.on('ready', () => {
             console.log('Torrent is ready')
@@ -59,10 +54,8 @@ router.get('/', async (req, res) => {
             chunk_size = engine.torrent.pieceLength
             first_chunk = Math.floor(start / chunk_size)
             last_chunk = Math.floor(end / chunk_size)
-            console.log(`>>>>>>>>>>>> RANGE: ${range} ${requested} | start: ${start} - ${first_chunk} | end: ${end} - ${last_chunk} | filesize: ${file.length}`) 
+            console.log(`RANGE: ${range} | ${start} - ${end} - | ${first_chunk} - ${last_chunk} | filesize: ${file.length}`) 
 
-            // const readStream = file.createReadStream({ start, end })
-            // const writeStream = fs.createWriteStream(file_path, { start, end })
             const readStream = file.createReadStream()
             const writeStream = fs.createWriteStream(file_path)
             readStream.pipe(writeStream)
@@ -81,99 +74,41 @@ router.get('/', async (req, res) => {
                 console.log('File download complete')
             })
 
-            ////////// risk of infinite loop, maderna walo!
-            // for (let i = first_chunk; i <= last_chunk; i++) {
-            //     if (!saved_chunks.includes(i)) {
-            //         i = first_chunk
-            //     }
-            //     if (i == last_chunk) {
-            //         console.log('range_ready event emitted')
-            //         eventEmitter.emit('range_ready')
-            //     }
-            // }
+            const checkRange = () => {
+                if (requested && fs.existsSync(file_path)) {
+                    requested = false
+                    console.log('checking requested range')
+                    for (let i = first_chunk; i <= last_chunk; i++) {
+                        if (!saved_chunks.has(i)) {
+                            console.log('range is not ready')
+                            requested = true
+                            break
+                        }
+                        if (i == last_chunk) {
+                            eventEmitter.removeListener('check_range', checkRange)
+                            console.log('range is ready')
+                            res.status(206).header({
+                                'Content-Range': `bytes ${start}-${end}/${file.length}`,
+                                'Accept-Ranges': 'bytes',
+                                'Content-Length': end - start + 1,
+                                'Content-Type': 'video/mp4',
+                                'Cache-Control': 'no-cache',
+                                'Connection': 'Keep-Alive',
+                                'Keep-Alive': 'timeout=60'
+                            });
+                            fs.createReadStream(file_path, {start, end}).pipe(res)
+                        }
+                    }
+                }
+            }
 
-            eventEmitter.emit('check_range')
-            eventEmitter.once('range_ready', () => {
-                console.log('range_ready event caught')
-                res.status(206).header({
-                    'Content-Range': `bytes ${start}-${end}/${file.length}`,
-                    'Accept-Ranges': 'bytes',
-                    'Content-Length': end - start + 1,
-                    'Content-Type': 'video/mp4',
-                });
-                fs.createReadStream(file_path, {start, end}).pipe(res)
-            })
-            // let range_ready, buffer
-            // const intervalId = setInterval(() => {
-            //     for (let i = first_chunk; i <= last_chunk; i++) {
-            //         if (!saved_chunks.includes(i)) {
-            //             break
-            //         }
-            //         if (i == last_chunk) {
-            //             range_ready = true
-            //         }
-            //     }
-
-            //     if (range_ready && fs.existsSync(file_path)) {
-            //         range_ready = false
-            //         buffer = Buffer.alloc(0)
-            //         fs.open(file_path, 'r', (error, fd) => {
-            //             if (error) {
-            //                 console.error(error)
-            //                 return res.status(500).json({error: 'FAILED LVL 1'})
-            //             }
-
-            //             const length = end - start + 1
-            //             buffer = Buffer.alloc(length)
-            //             fs.read(fd, buffer, 0, length, start, (error, bytesRead, buffer) => {
-            //                 if (error) {
-            //                     console.error(error)
-            //                     return res.status(500).json({error: 'FAILED LVL 2'})
-            //                 } 
-            //                 fs.close(fd, (error) => {
-            //                     if (error) {
-            //                         console.error(error)
-            //                         return res.status(500).json({error: 'FAILED LVL 3'})
-            //                     } 
-            //                 })
-            //                 if (bytesRead == length) {
-            //                     console.log('bytesRead', bytesRead)
-            //                     res.status(206).header({
-            //                         'Content-Range': `bytes ${start}-${end}/${file.length}`,
-            //                         'Accept-Ranges': 'bytes',
-            //                         'Content-Length': end - start + 1,
-            //                         'Content-Type': 'video/mp4',
-            //                     }).send(buffer)
-            //                     console.log('response sent')
-            //                     clearInterval(intervalId)
-            //                 }
-            //             })
-            //         })
-            //     }
-            // }, 200)
+            eventEmitter.on('check_range', checkRange)
         })
         
         engine.on('download', (chunk) => {
             console.log('Downloading chunk:', chunk)
             saved_chunks.add(chunk)
-            fs.createWriteStream('log.txt').write(Array.from(saved_chunks).join('\n'))
-            // if (requested) {
-            eventEmitter.on('check_range', () => {
-                console.log('checking range')
-                for (let i = first_chunk; i <= last_chunk; i++) {
-                    if (!saved_chunks.has(i)) {
-                        console.log('range not ready')
-                        break
-                    }
-                    if (i == last_chunk) {
-                        console.log('range is ready')
-                        eventEmitter.emit('range_ready')
-                        requested = false
-                    }
-                }
-            })
-            // }
-            // chunksTracker[user_id].push(chunk)
+            eventEmitter.emit('check_range')
         })
         
         engine.on('idle', () => {
