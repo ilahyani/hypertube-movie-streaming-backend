@@ -7,7 +7,9 @@ const saved_chunks = new Set()
 const eventEmitter = new EventEmitter()
 router.get('/', async (req, res) => {
     const range = req.headers.range
-    const { user_id, hash } = req.query
+    const { user_id, hash, movie_id } = req.query
+    // query movies table to check if movie_id is downloaded
+    // create record if not exists
     if (!range) {
         return res.status(416).json({error: "Missing Range"})
     }

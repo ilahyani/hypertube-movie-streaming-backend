@@ -160,3 +160,43 @@ message updateLastnameResponse {
 service updateLastname {
     rpc updateLastnameService (updateLastnameRequest) returns (updateLastnameResponse);
 }
+
+// // MOVIES API
+
+// GET
+
+message Movie {}
+
+message getMoviesRequest {}
+
+message getMoviesResponse {}
+
+service getMovies {}
+
+// POST
+
+message addMoviesRequest {}
+
+message addMoviesResponse {}
+
+service addMovies {}
+
+// // COMMENTS API
+
+// GET
+
+message Comment {}
+
+message getCommentsRequest {}
+
+message getCommentsResponse {}
+
+service getComments{}
+
+// POST
+
+message addCommentsRequest {}
+
+message addCommentsResponse {}
+
+service addComments{}

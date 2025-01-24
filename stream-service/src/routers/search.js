@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
         }
         const { data } = await response.json()
         data.movies = data.movies.map((movie) => {
-            // query movies table, if record exists, watched = true else watched = false
+            // query movies table, if record exists, watched = recored.watched | false
             return {
                 id: movie.id,
                 title: movie.title_english,
