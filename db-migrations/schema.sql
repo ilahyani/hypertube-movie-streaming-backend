@@ -1,34 +1,42 @@
 BEGIN;
 
--- movies-users many to many relationship
--- comments-movies one to many relationship
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TABLE IF NOT EXISTS users (
+CREATE TABLE IF NOT EXISTS Users (
     id VARCHAR(255) UNIQUE NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
+    date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(255) UNIQUE NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     passwd VARCHAR(255),
     picture TEXT,
-    oauth_id VARCHAR(255) UNIQUE,
+    oauth_id VARCHAR(255) UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS movies (
-    id INT,
+CREATE TABLE IF NOT EXISTS Movies (
+    id INT UNIQUE NOT NULL PRIMARY KEY,
     date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_watched TIMESTAMP NOT NULL,
     watched BOOLEAN NOT NULL DEFAULT TRUE
-    downloaded BOOLEAN NOT NULL DEFAULT TRUE,
+    downloaded BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE IF NOT EXISTS comments (
+CREATE TABLE UserMovies (
+    movie_id INT,
+    user_id VARCHAR(255),
+    PRIMARY KEY (user_id, movie_id),
+    FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (movie_id) REFERENCES Movies(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS Comments (
     id VARCHAR(255) UNIQUE NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id VARCHAR(255) NOT NULL,
     date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    movie_id 
-    FOREIGN KEY (movie_id) REFERENCES movies(id) ON DELETE CASCADE,
     comment TEXT,
+    movie_id INT,
+    FOREIGN KEY (movie_id) REFERENCES Movies(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 COMMIT;
