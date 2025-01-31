@@ -1,25 +1,47 @@
-const router = require("express").Router({mergeParams: true})
+const router = require("express").Router({ mergeParams: true })
 const torrentStream = require('torrent-stream')
 const fs = require('fs')
 const EventEmitter = require('node:events')
+const { addMovieRPC, getMovieRPC } = require('../grpc/grpc_client')
 
-const saved_chunks = new Set()
+// const saved_chunks = new Set()
+const saved_chunks = {}
 const eventEmitter = new EventEmitter()
+
+// keep track of clients request and prevent repeated proccessing of data 
+request_data = {
+    'req_id?????????????????///': {
+        processed: false,
+        torrent: false, // wether the movie is torrenting or not, if yes check saved chunks before serving
+        movie_path: null,
+        saved_chunks: []
+    }
+}
+
 router.get('/', async (req, res) => {
     const range = req.headers.range
-    const { user_id, hash, movie_id } = req.query
-    // query movies table to check if movie_id is downloaded
-    // create record if not exists
+    const { user_id, movie_id, hash } = req.query
+
     if (!range) {
         return res.status(416).json({error: "Missing Range"})
     }
     if (!user_id) {
         return res.status(400).json({error: "Missing User ID"})
     }
+    if (!movie_id) {
+        return res.status(400).json({error: "Missing Movie ID"})
+    }
     if (!hash) {
         return res.status(400).json({error: "Missing Movie Hash"})
     }
     try {
+        /////////// this will run everytime a range is requested
+        let movie = await getMovieRPC(movie_id)
+        if (!movie.downloaded) {} // torrent
+        else {} // stream
+        if (!saved_chunks[hash]) {
+            saved_chunks[hash] = []
+        }
         const magnet = `magnet:?xt=urn:btih:${hash}`
         const engine = torrentStream(magnet, {
             tmp: 'downloads',
@@ -81,7 +103,7 @@ router.get('/', async (req, res) => {
                     requested = false
                     console.log('checking requested range')
                     for (let i = first_chunk; i <= last_chunk; i++) {
-                        if (!saved_chunks.has(i)) {
+                        if (!saved_chunks[hash].includes(i)) {
                             console.log('range is not ready')
                             requested = true
                             break
@@ -109,7 +131,7 @@ router.get('/', async (req, res) => {
         
         engine.on('download', (chunk) => {
             console.log('Downloading chunk:', chunk)
-            saved_chunks.add(chunk)
+            saved_chunks[hash].push(chunk)
             eventEmitter.emit('check_range')
         })
         

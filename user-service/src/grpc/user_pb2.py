@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nuser.proto\x12\x04user\"k\n\x04User\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\x12\x12\n\nfirst_name\x18\x04 \x01(\t\x12\x11\n\tlast_name\x18\x05 \x01(\t\x12\x0f\n\x07picture\x18\x06 \x01(\t\"\x81\x01\n\nLogin_User\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\x12\x12\n\nfirst_name\x18\x04 \x01(\t\x12\x11\n\tlast_name\x18\x05 \x01(\t\x12\x0e\n\x06passwd\x18\x06 \x01(\t\x12\x0f\n\x07picture\x18\x07 \x01(\t\" \n\x0cloginRequest\x12\x10\n\x08username\x18\x01 \x01(\t\"/\n\rloginResponse\x12\x1e\n\x04user\x18\x01 \x01(\x0b\x32\x10.user.Login_User\"v\n\x0bSignup_User\x12\r\n\x05\x65mail\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x11\n\tlast_name\x18\x03 \x01(\t\x12\x10\n\x08username\x18\x04 \x01(\t\x12\x0e\n\x06passwd\x18\x05 \x01(\t\x12\x0f\n\x07picture\x18\x06 \x01(\t\"0\n\rsignupRequest\x12\x1f\n\x04user\x18\x01 \x01(\x0b\x32\x11.user.Signup_User\"*\n\x0esignupResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"<\n\x0e\x61\x64\x64UserRequest\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\x12\x10\n\x08oauth_id\x18\x02 \x01(\t\"+\n\x0f\x61\x64\x64UserResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"\x1c\n\x0egetUserRequest\x12\n\n\x02id\x18\x01 \x01(\t\"+\n\x0fgetUserResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"#\n\x12searchUsersRequest\x12\r\n\x05query\x18\x01 \x01(\t\"0\n\x13searchUsersResponse\x12\x19\n\x05users\x18\x01 \x03(\x0b\x32\n.user.User\"5\n\x15updateUsernameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x10\n\x08username\x18\x02 \x01(\t\"2\n\x16updateUsernameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"/\n\x12updateEmailRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\"/\n\x13updateEmailResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"8\n\x16updateFirstnameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\"3\n\x17updateFirstnameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"6\n\x15updateLastnameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\tlast_name\x18\x02 \x01(\t\"2\n\x16updateLastnameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User2@\n\x05login\x12\x37\n\x0cloginService\x12\x12.user.loginRequest\x1a\x13.user.loginResponse2D\n\x06signup\x12:\n\rsignupService\x12\x13.user.signupRequest\x1a\x14.user.signupResponse2H\n\x07\x61\x64\x64User\x12=\n\x0e\x61\x64\x64UserService\x12\x14.user.addUserRequest\x1a\x15.user.addUserResponse2H\n\x07getUser\x12=\n\x0egetUserService\x12\x14.user.getUserRequest\x1a\x15.user.getUserResponse2X\n\x0bsearchUsers\x12I\n\x12searchUsersService\x12\x18.user.searchUsersRequest\x1a\x19.user.searchUsersResponse2d\n\x0eupdateUsername\x12R\n\x15updateUsernameService\x12\x1b.user.updateUsernameRequest\x1a\x1c.user.updateUsernameResponse2X\n\x0bupdateEmail\x12I\n\x12updateEmailService\x12\x18.user.updateEmailRequest\x1a\x19.user.updateEmailResponse2h\n\x0fupdateFirstname\x12U\n\x16updateFirstnameService\x12\x1c.user.updateFirstnameRequest\x1a\x1d.user.updateFirstnameResponse2d\n\x0eupdateLastname\x12R\n\x15updateLastnameService\x12\x1b.user.updateLastnameRequest\x1a\x1c.user.updateLastnameResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nuser.proto\x12\x04user\"k\n\x04User\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\x12\x12\n\nfirst_name\x18\x04 \x01(\t\x12\x11\n\tlast_name\x18\x05 \x01(\t\x12\x0f\n\x07picture\x18\x06 \x01(\t\"\x81\x01\n\nLogin_User\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\x12\x12\n\nfirst_name\x18\x04 \x01(\t\x12\x11\n\tlast_name\x18\x05 \x01(\t\x12\x0e\n\x06passwd\x18\x06 \x01(\t\x12\x0f\n\x07picture\x18\x07 \x01(\t\" \n\x0cloginRequest\x12\x10\n\x08username\x18\x01 \x01(\t\"/\n\rloginResponse\x12\x1e\n\x04user\x18\x01 \x01(\x0b\x32\x10.user.Login_User\"v\n\x0bSignup_User\x12\r\n\x05\x65mail\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\x12\x11\n\tlast_name\x18\x03 \x01(\t\x12\x10\n\x08username\x18\x04 \x01(\t\x12\x0e\n\x06passwd\x18\x05 \x01(\t\x12\x0f\n\x07picture\x18\x06 \x01(\t\"0\n\rsignupRequest\x12\x1f\n\x04user\x18\x01 \x01(\x0b\x32\x11.user.Signup_User\"*\n\x0esignupResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"<\n\x0e\x61\x64\x64UserRequest\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\x12\x10\n\x08oauth_id\x18\x02 \x01(\t\"+\n\x0f\x61\x64\x64UserResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"\x1c\n\x0egetUserRequest\x12\n\n\x02id\x18\x01 \x01(\t\"+\n\x0fgetUserResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"#\n\x12searchUsersRequest\x12\r\n\x05query\x18\x01 \x01(\t\"0\n\x13searchUsersResponse\x12\x19\n\x05users\x18\x01 \x03(\x0b\x32\n.user.User\"5\n\x15updateUsernameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x10\n\x08username\x18\x02 \x01(\t\"2\n\x16updateUsernameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"/\n\x12updateEmailRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\r\n\x05\x65mail\x18\x02 \x01(\t\"/\n\x13updateEmailResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"8\n\x16updateFirstnameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x12\n\nfirst_name\x18\x02 \x01(\t\"3\n\x17updateFirstnameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"6\n\x15updateLastnameRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\tlast_name\x18\x02 \x01(\t\"2\n\x16updateLastnameResponse\x12\x18\n\x04user\x18\x01 \x01(\x0b\x32\n.user.User\"e\n\x05Movie\x12\n\n\x02id\x18\x01 \x01(\t\x12\x14\n\x0clast_watched\x18\x02 \x01(\t\x12\x0f\n\x07watched\x18\x03 \x01(\x08\x12\x12\n\ndownloaded\x18\x04 \x01(\x08\x12\x15\n\rdownload_path\x18\x05 \x01(\t\"+\n\rmovieResponse\x12\x1a\n\x05movie\x18\x01 \x01(\x0b\x32\x0b.user.Movie\"K\n\x0f\x61\x64\x64MovieRequest\x12\x10\n\x08movie_id\x18\x01 \x01(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\x12\x15\n\rdownload_path\x18\x03 \x01(\t\"$\n\x10getMoviesRequest\x12\x10\n\x08movie_id\x18\x01 \x01(\t\":\n\x14getUserMoviesRequest\x12\x11\n\tmovie_ids\x18\x01 \x03(\t\x12\x0f\n\x07user_id\x18\x02 \x01(\t\"*\n\x15getUserMoviesResponse\x12\x11\n\tmovie_ids\x18\x01 \x03(\t\"Y\n\x07\x43omment\x12\n\n\x02id\x18\x01 \x01(\t\x12\x11\n\tauthor_id\x18\x02 \x01(\t\x12\x10\n\x08movie_id\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x61te\x18\x04 \x01(\t\x12\x0f\n\x07\x63omment\x18\x05 \x01(\t\"L\n\x12getCommentsRequest\x12\x10\n\x08movie_id\x18\x01 \x01(\t\x12\x16\n\tauthor_id\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x0c\n\n_author_id\"6\n\x13getCommentsResponse\x12\x1f\n\x08\x63omments\x18\x01 \x03(\x0b\x32\r.user.Comment\"I\n\x11\x61\x64\x64\x43ommentRequest\x12\x11\n\tauthor_id\x18\x01 \x01(\t\x12\x10\n\x08movie_id\x18\x02 \x01(\t\x12\x0f\n\x07\x63omment\x18\x03 \x01(\t\"%\n\x12\x61\x64\x64\x43ommentResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x32@\n\x05login\x12\x37\n\x0cloginService\x12\x12.user.loginRequest\x1a\x13.user.loginResponse2D\n\x06signup\x12:\n\rsignupService\x12\x13.user.signupRequest\x1a\x14.user.signupResponse2H\n\x07\x61\x64\x64User\x12=\n\x0e\x61\x64\x64UserService\x12\x14.user.addUserRequest\x1a\x15.user.addUserResponse2H\n\x07getUser\x12=\n\x0egetUserService\x12\x14.user.getUserRequest\x1a\x15.user.getUserResponse2X\n\x0bsearchUsers\x12I\n\x12searchUsersService\x12\x18.user.searchUsersRequest\x1a\x19.user.searchUsersResponse2d\n\x0eupdateUsername\x12R\n\x15updateUsernameService\x12\x1b.user.updateUsernameRequest\x1a\x1c.user.updateUsernameResponse2X\n\x0bupdateEmail\x12I\n\x12updateEmailService\x12\x18.user.updateEmailRequest\x1a\x19.user.updateEmailResponse2h\n\x0fupdateFirstname\x12U\n\x16updateFirstnameService\x12\x1c.user.updateFirstnameRequest\x1a\x1d.user.updateFirstnameResponse2d\n\x0eupdateLastname\x12R\n\x15updateLastnameService\x12\x1b.user.updateLastnameRequest\x1a\x1c.user.updateLastnameResponse2\xc9\x01\n\x0cMovieService\x12\x37\n\x08getMovie\x12\x16.user.getMoviesRequest\x1a\x13.user.movieResponse\x12H\n\rgetUserMovies\x12\x1a.user.getUserMoviesRequest\x1a\x1b.user.getUserMoviesResponse\x12\x36\n\x08\x61\x64\x64Movie\x12\x15.user.addMovieRequest\x1a\x13.user.movieResponse2\x95\x01\n\x0e\x43ommentService\x12\x42\n\x0bgetComments\x12\x18.user.getCommentsRequest\x1a\x19.user.getCommentsResponse\x12?\n\naddComment\x12\x17.user.addCommentRequest\x1a\x18.user.addCommentResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -73,22 +73,48 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_UPDATELASTNAMEREQUEST']._serialized_end=1197
   _globals['_UPDATELASTNAMERESPONSE']._serialized_start=1199
   _globals['_UPDATELASTNAMERESPONSE']._serialized_end=1249
-  _globals['_LOGIN']._serialized_start=1251
-  _globals['_LOGIN']._serialized_end=1315
-  _globals['_SIGNUP']._serialized_start=1317
-  _globals['_SIGNUP']._serialized_end=1385
-  _globals['_ADDUSER']._serialized_start=1387
-  _globals['_ADDUSER']._serialized_end=1459
-  _globals['_GETUSER']._serialized_start=1461
-  _globals['_GETUSER']._serialized_end=1533
-  _globals['_SEARCHUSERS']._serialized_start=1535
-  _globals['_SEARCHUSERS']._serialized_end=1623
-  _globals['_UPDATEUSERNAME']._serialized_start=1625
-  _globals['_UPDATEUSERNAME']._serialized_end=1725
-  _globals['_UPDATEEMAIL']._serialized_start=1727
-  _globals['_UPDATEEMAIL']._serialized_end=1815
-  _globals['_UPDATEFIRSTNAME']._serialized_start=1817
-  _globals['_UPDATEFIRSTNAME']._serialized_end=1921
-  _globals['_UPDATELASTNAME']._serialized_start=1923
-  _globals['_UPDATELASTNAME']._serialized_end=2023
+  _globals['_MOVIE']._serialized_start=1251
+  _globals['_MOVIE']._serialized_end=1352
+  _globals['_MOVIERESPONSE']._serialized_start=1354
+  _globals['_MOVIERESPONSE']._serialized_end=1397
+  _globals['_ADDMOVIEREQUEST']._serialized_start=1399
+  _globals['_ADDMOVIEREQUEST']._serialized_end=1474
+  _globals['_GETMOVIESREQUEST']._serialized_start=1476
+  _globals['_GETMOVIESREQUEST']._serialized_end=1512
+  _globals['_GETUSERMOVIESREQUEST']._serialized_start=1514
+  _globals['_GETUSERMOVIESREQUEST']._serialized_end=1572
+  _globals['_GETUSERMOVIESRESPONSE']._serialized_start=1574
+  _globals['_GETUSERMOVIESRESPONSE']._serialized_end=1616
+  _globals['_COMMENT']._serialized_start=1618
+  _globals['_COMMENT']._serialized_end=1707
+  _globals['_GETCOMMENTSREQUEST']._serialized_start=1709
+  _globals['_GETCOMMENTSREQUEST']._serialized_end=1785
+  _globals['_GETCOMMENTSRESPONSE']._serialized_start=1787
+  _globals['_GETCOMMENTSRESPONSE']._serialized_end=1841
+  _globals['_ADDCOMMENTREQUEST']._serialized_start=1843
+  _globals['_ADDCOMMENTREQUEST']._serialized_end=1916
+  _globals['_ADDCOMMENTRESPONSE']._serialized_start=1918
+  _globals['_ADDCOMMENTRESPONSE']._serialized_end=1955
+  _globals['_LOGIN']._serialized_start=1957
+  _globals['_LOGIN']._serialized_end=2021
+  _globals['_SIGNUP']._serialized_start=2023
+  _globals['_SIGNUP']._serialized_end=2091
+  _globals['_ADDUSER']._serialized_start=2093
+  _globals['_ADDUSER']._serialized_end=2165
+  _globals['_GETUSER']._serialized_start=2167
+  _globals['_GETUSER']._serialized_end=2239
+  _globals['_SEARCHUSERS']._serialized_start=2241
+  _globals['_SEARCHUSERS']._serialized_end=2329
+  _globals['_UPDATEUSERNAME']._serialized_start=2331
+  _globals['_UPDATEUSERNAME']._serialized_end=2431
+  _globals['_UPDATEEMAIL']._serialized_start=2433
+  _globals['_UPDATEEMAIL']._serialized_end=2521
+  _globals['_UPDATEFIRSTNAME']._serialized_start=2523
+  _globals['_UPDATEFIRSTNAME']._serialized_end=2627
+  _globals['_UPDATELASTNAME']._serialized_start=2629
+  _globals['_UPDATELASTNAME']._serialized_end=2729
+  _globals['_MOVIESERVICE']._serialized_start=2732
+  _globals['_MOVIESERVICE']._serialized_end=2933
+  _globals['_COMMENTSERVICE']._serialized_start=2936
+  _globals['_COMMENTSERVICE']._serialized_end=3085
 # @@protoc_insertion_point(module_scope)

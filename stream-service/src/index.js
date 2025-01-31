@@ -6,6 +6,8 @@ app.get('/api/stream', (req, res) => {
     return res.json({'message': 'stream service is up!'})
 })
 
+app.use(express.json())
+
 app.use('/api/stream/comments', require('./routers/comments'))
 app.use('/api/stream/search', require('./routers/search'))
 app.use('/api/stream/video', require('./routers/video'))
