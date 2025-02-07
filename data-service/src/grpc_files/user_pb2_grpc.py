@@ -671,3 +671,276 @@ class updateLastname(object):
             timeout,
             metadata,
             _registered_method=True)
+
+
+class MovieServiceStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.getMovie = channel.unary_unary(
+                '/user.MovieService/getMovie',
+                request_serializer=user__pb2.getMoviesRequest.SerializeToString,
+                response_deserializer=user__pb2.movieResponse.FromString,
+                _registered_method=True)
+        self.getUserMovies = channel.unary_unary(
+                '/user.MovieService/getUserMovies',
+                request_serializer=user__pb2.getUserMoviesRequest.SerializeToString,
+                response_deserializer=user__pb2.getUserMoviesResponse.FromString,
+                _registered_method=True)
+        self.addMovie = channel.unary_unary(
+                '/user.MovieService/addMovie',
+                request_serializer=user__pb2.addMovieRequest.SerializeToString,
+                response_deserializer=user__pb2.movieResponse.FromString,
+                _registered_method=True)
+
+
+class MovieServiceServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def getMovie(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def getUserMovies(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def addMovie(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_MovieServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'getMovie': grpc.unary_unary_rpc_method_handler(
+                    servicer.getMovie,
+                    request_deserializer=user__pb2.getMoviesRequest.FromString,
+                    response_serializer=user__pb2.movieResponse.SerializeToString,
+            ),
+            'getUserMovies': grpc.unary_unary_rpc_method_handler(
+                    servicer.getUserMovies,
+                    request_deserializer=user__pb2.getUserMoviesRequest.FromString,
+                    response_serializer=user__pb2.getUserMoviesResponse.SerializeToString,
+            ),
+            'addMovie': grpc.unary_unary_rpc_method_handler(
+                    servicer.addMovie,
+                    request_deserializer=user__pb2.addMovieRequest.FromString,
+                    response_serializer=user__pb2.movieResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'user.MovieService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('user.MovieService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class MovieService(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def getMovie(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.MovieService/getMovie',
+            user__pb2.getMoviesRequest.SerializeToString,
+            user__pb2.movieResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def getUserMovies(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.MovieService/getUserMovies',
+            user__pb2.getUserMoviesRequest.SerializeToString,
+            user__pb2.getUserMoviesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def addMovie(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.MovieService/addMovie',
+            user__pb2.addMovieRequest.SerializeToString,
+            user__pb2.movieResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class CommentServiceStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.getComments = channel.unary_unary(
+                '/user.CommentService/getComments',
+                request_serializer=user__pb2.getCommentsRequest.SerializeToString,
+                response_deserializer=user__pb2.getCommentsResponse.FromString,
+                _registered_method=True)
+        self.addComment = channel.unary_unary(
+                '/user.CommentService/addComment',
+                request_serializer=user__pb2.addCommentRequest.SerializeToString,
+                response_deserializer=user__pb2.addCommentResponse.FromString,
+                _registered_method=True)
+
+
+class CommentServiceServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def getComments(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def addComment(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_CommentServiceServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'getComments': grpc.unary_unary_rpc_method_handler(
+                    servicer.getComments,
+                    request_deserializer=user__pb2.getCommentsRequest.FromString,
+                    response_serializer=user__pb2.getCommentsResponse.SerializeToString,
+            ),
+            'addComment': grpc.unary_unary_rpc_method_handler(
+                    servicer.addComment,
+                    request_deserializer=user__pb2.addCommentRequest.FromString,
+                    response_serializer=user__pb2.addCommentResponse.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'user.CommentService', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('user.CommentService', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class CommentService(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def getComments(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.CommentService/getComments',
+            user__pb2.getCommentsRequest.SerializeToString,
+            user__pb2.getCommentsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def addComment(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.CommentService/addComment',
+            user__pb2.addCommentRequest.SerializeToString,
+            user__pb2.addCommentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)

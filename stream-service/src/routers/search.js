@@ -1,4 +1,5 @@
-const router = require("express").Router({mergeParams: true});
+const router = require("express").Router({ mergeParams: true });
+const { getUserMoviesRPC } = require("../grpc/grpc_client")
 
 router.get('/', async (req, res) => {
     let { query, page, pageSize, sort } = req.query
@@ -22,15 +23,16 @@ router.get('/', async (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch data'})
         }
         const { data } = await response.json()
+        const movie_ids = data.movies.map((movie) => movie.id)
+        const watched_movies = await getUserMoviesRPC(movie_ids, '')
         data.movies = data.movies.map((movie) => {
-            // query movies table, if record exists, watched = true else watched = false
             return {
                 id: movie.id,
                 title: movie.title_english,
                 year: movie.year,
                 rating: movie.rating,
                 thumbnail: movie.large_cover_image,
-                watched: false
+                watched: watched_movies?.includes(movie.id.toString()) || false
             }
         })
         return res.status(200).json({ data })
@@ -46,6 +48,7 @@ router.get('/:id', async (req, res) => {
     if (!movie_id) {
         res.status(400).json({ error: 'Missing movie id' })
     }
+    // await addMovieRPC(movie_id, '', 'downlaods/moviex')
     const url = `https://yts.mx/api/v2/movie_details.json?movie_id=${movie_id}`
     try {
         const response = await fetch(url)
@@ -53,6 +56,8 @@ router.get('/:id', async (req, res) => {
             return res.status(500).json({ error: 'Failed to fetch data'})
         }
         const { data } = await response.json()
+        const movie_ids = [movie_id]
+        const watched_movies = await getUserMoviesRPC(movie_ids, '')
         return res.status(200).json({
             title: data.movie.title_english,
             summary: data.movie.description_full,
@@ -61,9 +66,11 @@ router.get('/:id', async (req, res) => {
             genre: data.movie.genres,
             thumbnail: data.movie.large_cover_image,
             torrents: data.movie.torrents, 
+            watched: watched_movies?.includes(data.movie.id.toString()) || false
             // subtitles
         })
     } catch (error) {
+        console.log(error)
         return res.status(500).json({ error: 'Internal Server Error'})
     }
 })

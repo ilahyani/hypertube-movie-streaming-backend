@@ -24,6 +24,18 @@ services:
     command: ["sh", "-c", "/tmp/db/init.sh"]
     restart: "no"
 
+  # grpc:
+  #   image: python:3.12-slim
+  #   container_name: grpc
+  #   env_file:
+  #     - data-service/.env
+  #   networks:
+  #     - hyper-network
+  #   volumes:
+  #     - ./grpc:/grpc
+  #   command: ["sh", "-c", "/grpc/setup.sh"]
+  #   restart: "no"
+
   data-service:
     build: ./data-service
     image: data-service
@@ -90,6 +102,7 @@ services:
       - ./stream-service:/app
       - /app/node_modules
       - ./grpc:/grpc
+      - ~/goinfre/hypertube:/downloads
     env_file:
       - ./stream-service/.env
     networks:

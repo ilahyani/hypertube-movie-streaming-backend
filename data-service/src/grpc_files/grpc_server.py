@@ -179,7 +179,7 @@ class addUserServicer(user_pb2_grpc.addUserServicer):
             context.set_details('Operation Failed: missing data')
             return user_pb2.addUserResponse()
         if request.oauth_id:
-            query = "SELECT * FROM users WHERE oauth_id = %s ;"
+            query = "SELECT * FROM Users WHERE oauth_id = %s ;"
             user_data = asyncio.run(db.fetch_db(query, (request.oauth_id, )))
             if user_data is not None:
                 user = db.get_user_dict(user_data)
@@ -268,6 +268,120 @@ class loginServicer(user_pb2_grpc.loginServicer):
         logger.info(f'loginService succeeded: {user}')
         return user_pb2.loginResponse(user=user)
 
+class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
+    def addMovie(self, request, context):
+        if not request.user_id or not request.movie_id or not request.download_path:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: Missing data')
+            return user_pb2.movieResponse()
+        try:
+            res = asyncio.run(db.add_movie(request.movie_id, request.user_id, request.download_path))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Operation Failed: database exception: {e}')
+            logger.error(f'Operation Failed: database exception: {e}')
+            return user_pb2.movieResponse()
+        if not res:
+            return user_pb2.movieResponse()
+        logger.info(f'addMovie request success: {res}')
+        return user_pb2.movieResponse(movie=user_pb2.Movie(
+            id = res['id'],
+            last_watched =  res['last_watched'],
+            watched = res['watched'],
+            downloaded = res['downloaded'],
+            download_path = res['download_path'],
+        ))
+    
+    def getMovie(self, request, context):
+        if not request.movie_id:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: Missing data')
+            return user_pb2.movieResponse()
+        try:
+            res = asyncio.run(db.get_movie(request.movie_id))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Operation Failed: database exception: {e}')
+            logger.error(f'Operation Failed: database exception: {e}')
+            return user_pb2.movieResponse()
+        if not res:
+            return user_pb2.movieResponse()
+        logger.info(f'getMovie request success: {res}')
+        return user_pb2.movieResponse(movie=user_pb2.Movie(
+            id = res['id'],
+            last_watched =  res['last_watched'],
+            watched = res['watched'],
+            downloaded = res['downloaded'],
+            download_path = res['download_path'],
+        ))
+    
+    def getUserMovies(self, request, context):
+        logger.info(f'getUserMovies request: {request.movie_ids}')
+        logger.info(f'movie_ids list {list(request.movie_ids)}')
+        if not request.movie_ids or not request.user_id:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: Missing data')
+            return user_pb2.getUserMoviesResponse()
+        try:
+            movies = asyncio.run(db.get_user_movies(list(request.movie_ids), request.user_id))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Operation Failed: database exception: {e}')
+            logger.error(f'Operation Failed: database exception: {e}')
+            return user_pb2.getUserMoviesResponse()
+        logger.info(f'getUserMovies request success: {movies}')
+        results = []
+        for movie in movies:
+            results.append(movie[0])
+        logger.info(f'results {results}')
+        return user_pb2.getUserMoviesResponse(movie_ids=results)
+
+class CommentServiceServicer(user_pb2_grpc.CommentServiceServicer):
+    def addComment(self, request, context):
+        logger.info(f'addComment request: {request}')
+        if not request.movie_id or not request.author_id or not request.comment:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: Missing data')
+            return user_pb2.addCommentResponse()
+        try:
+            res = asyncio.run(db.add_comment(request.movie_id, request.author_id, request.comment))
+            logger.info(f'add_comment res: {res}')
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Operation Failed: database exception: {e}')
+            logger.error(f'Operation Failed: database exception: {e}')
+            return user_pb2.addCommentResponse()
+        logger.info(f'addComment request success')
+        return user_pb2.addCommentResponse(success=True)
+
+    def getComments(self, request, context):
+        logger.info(f'getComments request: {request}')
+        if not request.movie_id:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: Missing data')
+            return user_pb2.getCommentsResponse()
+        try:
+            comments = asyncio.run(db.get_comments(request.movie_id))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Operation Failed: database exception: {e}')
+            logger.error(f'Operation Failed: database exception: {e}')
+            return user_pb2.getCommentsResponse()
+        if not comments or len(comments) == 0:
+            return user_pb2.getCommentsResponse()
+        results = []
+        for comment in comments:
+            _comment = user_pb2.Comment(
+                id = comment[0],
+                author_id = comment[1],
+                movie_id = comment[2],
+                date = comment[3],
+                comment = comment[4]
+            )
+            results.append(_comment)
+        logger.info(f'getComments request success: {results}')
+        return user_pb2.getCommentsResponse(comments=results)
+
 def serve():
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -281,6 +395,8 @@ def serve():
     user_pb2_grpc.add_addUserServicer_to_server(addUserServicer(), server)
     user_pb2_grpc.add_signupServicer_to_server(signupServicer(), server)
     user_pb2_grpc.add_loginServicer_to_server(loginServicer(), server)
+    user_pb2_grpc.add_MovieServiceServicer_to_server(MovieServiceServicer(), server)
+    user_pb2_grpc.add_CommentServiceServicer_to_server(CommentServiceServicer(), server)
 
     server.add_insecure_port(f'[::]:{os.getenv('GRPC_SERVER_PORT')}')
     server.start()
