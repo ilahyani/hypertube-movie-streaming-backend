@@ -102,6 +102,7 @@ services:
       - ./stream-service:/app
       - /app/node_modules
       - ./grpc:/grpc
+      - ~/goinfre/hypertube:/downloads
     env_file:
       - ./stream-service/.env
     networks:
