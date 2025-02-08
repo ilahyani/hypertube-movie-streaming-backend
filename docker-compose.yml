@@ -109,6 +109,23 @@ services:
       - hyper-network
     restart: on-failure
 
+  cron-service:
+    build: ./cron-service
+    image: cron-service
+    container_name: cron-service
+    volumes:
+      - ./cron-service:/app
+      - ./grpc:/grpc
+      - ~/goinfre/hypertube:/downloads
+      - /app/node_modules
+    env_file:
+      - ./cron-service/.env
+    networks:
+      - hyper-network
+    depends_on:
+      - database
+    restart: on-failure
+
 networks:
   hyper-network:
     driver: bridge
