@@ -687,15 +687,30 @@ class MovieServiceStub(object):
                 request_serializer=user__pb2.getMoviesRequest.SerializeToString,
                 response_deserializer=user__pb2.movieResponse.FromString,
                 _registered_method=True)
-        self.getUserMovies = channel.unary_unary(
-                '/user.MovieService/getUserMovies',
-                request_serializer=user__pb2.getUserMoviesRequest.SerializeToString,
-                response_deserializer=user__pb2.getUserMoviesResponse.FromString,
+        self.getMovies = channel.unary_unary(
+                '/user.MovieService/getMovies',
+                request_serializer=user__pb2.Empty.SerializeToString,
+                response_deserializer=user__pb2.moviesResponse.FromString,
                 _registered_method=True)
         self.addMovie = channel.unary_unary(
                 '/user.MovieService/addMovie',
                 request_serializer=user__pb2.addMovieRequest.SerializeToString,
                 response_deserializer=user__pb2.movieResponse.FromString,
+                _registered_method=True)
+        self.updateMovie = channel.unary_unary(
+                '/user.MovieService/updateMovie',
+                request_serializer=user__pb2.updateMovieRequest.SerializeToString,
+                response_deserializer=user__pb2.movieResponse.FromString,
+                _registered_method=True)
+        self.getUserMovies = channel.unary_unary(
+                '/user.MovieService/getUserMovies',
+                request_serializer=user__pb2.getUserMoviesRequest.SerializeToString,
+                response_deserializer=user__pb2.getUserMoviesResponse.FromString,
+                _registered_method=True)
+        self.deleteMovie = channel.unary_unary(
+                '/user.MovieService/deleteMovie',
+                request_serializer=user__pb2.deleteMovieRequest.SerializeToString,
+                response_deserializer=user__pb2.deleteMovieResponse.FromString,
                 _registered_method=True)
 
 
@@ -708,13 +723,31 @@ class MovieServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def getUserMovies(self, request, context):
+    def getMovies(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def addMovie(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def updateMovie(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def getUserMovies(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def deleteMovie(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -728,15 +761,30 @@ def add_MovieServiceServicer_to_server(servicer, server):
                     request_deserializer=user__pb2.getMoviesRequest.FromString,
                     response_serializer=user__pb2.movieResponse.SerializeToString,
             ),
-            'getUserMovies': grpc.unary_unary_rpc_method_handler(
-                    servicer.getUserMovies,
-                    request_deserializer=user__pb2.getUserMoviesRequest.FromString,
-                    response_serializer=user__pb2.getUserMoviesResponse.SerializeToString,
+            'getMovies': grpc.unary_unary_rpc_method_handler(
+                    servicer.getMovies,
+                    request_deserializer=user__pb2.Empty.FromString,
+                    response_serializer=user__pb2.moviesResponse.SerializeToString,
             ),
             'addMovie': grpc.unary_unary_rpc_method_handler(
                     servicer.addMovie,
                     request_deserializer=user__pb2.addMovieRequest.FromString,
                     response_serializer=user__pb2.movieResponse.SerializeToString,
+            ),
+            'updateMovie': grpc.unary_unary_rpc_method_handler(
+                    servicer.updateMovie,
+                    request_deserializer=user__pb2.updateMovieRequest.FromString,
+                    response_serializer=user__pb2.movieResponse.SerializeToString,
+            ),
+            'getUserMovies': grpc.unary_unary_rpc_method_handler(
+                    servicer.getUserMovies,
+                    request_deserializer=user__pb2.getUserMoviesRequest.FromString,
+                    response_serializer=user__pb2.getUserMoviesResponse.SerializeToString,
+            ),
+            'deleteMovie': grpc.unary_unary_rpc_method_handler(
+                    servicer.deleteMovie,
+                    request_deserializer=user__pb2.deleteMovieRequest.FromString,
+                    response_serializer=user__pb2.deleteMovieResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -777,7 +825,7 @@ class MovieService(object):
             _registered_method=True)
 
     @staticmethod
-    def getUserMovies(request,
+    def getMovies(request,
             target,
             options=(),
             channel_credentials=None,
@@ -790,9 +838,9 @@ class MovieService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/user.MovieService/getUserMovies',
-            user__pb2.getUserMoviesRequest.SerializeToString,
-            user__pb2.getUserMoviesResponse.FromString,
+            '/user.MovieService/getMovies',
+            user__pb2.Empty.SerializeToString,
+            user__pb2.moviesResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -820,6 +868,87 @@ class MovieService(object):
             '/user.MovieService/addMovie',
             user__pb2.addMovieRequest.SerializeToString,
             user__pb2.movieResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def updateMovie(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.MovieService/updateMovie',
+            user__pb2.updateMovieRequest.SerializeToString,
+            user__pb2.movieResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def getUserMovies(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.MovieService/getUserMovies',
+            user__pb2.getUserMoviesRequest.SerializeToString,
+            user__pb2.getUserMoviesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def deleteMovie(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/user.MovieService/deleteMovie',
+            user__pb2.deleteMovieRequest.SerializeToString,
+            user__pb2.deleteMovieResponse.FromString,
             options,
             channel_credentials,
             insecure,

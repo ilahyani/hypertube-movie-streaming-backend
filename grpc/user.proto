@@ -166,6 +166,7 @@ service updateLastname {
 // package hyper
 // // AUTH API
 // // USER API
+
 // // MOVIES API
 
 message Movie {
@@ -191,6 +192,18 @@ message getMoviesRequest {
     // optional string user_id = 2;
 }
 
+message updateMovieRequest {
+    string movie_id = 1;
+}
+
+message deleteMovieRequest {
+    string movie_id = 1;
+}
+
+message deleteMovieResponse {
+    bool success = 1;
+}
+
 message getUserMoviesRequest {
     repeated string movie_ids = 1;
     string user_id = 2;
@@ -200,10 +213,19 @@ message getUserMoviesResponse {
     repeated string movie_ids = 1;
 }
 
+message Empty {}
+
+message moviesResponse {
+    repeated Movie movies = 1;
+}
+
 service MovieService {
     rpc getMovie (getMoviesRequest) returns (movieResponse);
-    rpc getUserMovies (getUserMoviesRequest) returns (getUserMoviesResponse);
+    rpc getMovies (Empty) returns (moviesResponse);
     rpc addMovie (addMovieRequest) returns (movieResponse);
+    rpc updateMovie (updateMovieRequest) returns (movieResponse);
+    rpc getUserMovies (getUserMoviesRequest) returns (getUserMoviesResponse);
+    rpc deleteMovie (deleteMovieRequest) returns (deleteMovieResponse);
 }
 
 // // COMMENTS API
