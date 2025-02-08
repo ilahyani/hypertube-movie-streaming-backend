@@ -316,8 +316,7 @@ class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
         ))
     
     def getUserMovies(self, request, context):
-        logger.info(f'getUserMovies request: {request.movie_ids}')
-        logger.info(f'movie_ids list {list(request.movie_ids)}')
+        logger.info(f'getUserMovies request: {request}')
         if not request.movie_ids or not request.user_id:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: Missing data')
@@ -335,6 +334,68 @@ class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
             results.append(movie[0])
         logger.info(f'results {results}')
         return user_pb2.getUserMoviesResponse(movie_ids=results)
+    
+    def getMovies(self, request, context):
+        logger.info(f'getMovies request: {request}')
+        try:
+            movies = asyncio.run(db.get_movies())
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Operation Failed: database exception: {e}')
+            logger.error(f'Operation Failed: database exception: {e}')
+            return user_pb2.getUserMoviesResponse()
+        logger.info(f'getMovies request success: {movies}')
+        results = []
+        for movie in movies:
+            _movie = user_pb2.Movie(
+                id = movie[0],
+                last_watched =  movie[1],
+                watched = movie[2],
+                downloaded = movie[3],
+                download_path = movie[4],
+            )
+            results.append(_movie)
+        logger.info(f'results {results}')
+        return user_pb2.moviesResponse(movies=results)
+
+    def updateMovie(self, request, context):
+        logger.info(f'updateMovie request: ${request}')
+        if not request.movie_id:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: Missing data')
+            return user_pb2.movieResponse()
+        try:
+            movie = asyncio.run(db.update_movie(request.movie_id))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Operation Failed: database exception: {e}')
+            logger.error(f'Operation Failed: database exception: {e}')
+            return user_pb2.movieResponse()
+        _movie = user_pb2.Movie(
+            id = movie['id'],
+            last_watched =  movie['last_watched'],
+            watched = movie['watched'],
+            downloaded = movie['downloaded'],
+            download_path = movie['download_path'],
+        )
+        return user_pb2.movieResponse(movie=_movie)
+
+    def deleteMovie(self, request, context):
+        logger.info(f'deleteMovie request: ${request}')
+        if not request.movie_id:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: Missing data')
+            return user_pb2.movieResponse()
+        try:
+            asyncio.run(db.delete_movie(request.movie_id))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'Operation Failed: database exception: {e}')
+            logger.error(f'Operation Failed: database exception: {e}')
+            return user_pb2.movieResponse()
+        logger.info(f'deleteMovie request success')
+        return user_pb2.deleteMovieResponse(success=True)
+
 
 class CommentServiceServicer(user_pb2_grpc.CommentServiceServicer):
     def addComment(self, request, context):
@@ -345,7 +406,7 @@ class CommentServiceServicer(user_pb2_grpc.CommentServiceServicer):
             return user_pb2.addCommentResponse()
         try:
             res = asyncio.run(db.add_comment(request.movie_id, request.author_id, request.comment))
-            logger.info(f'add_comment res: {res}')
+            # logger.info(f'add_comment res: {res}')
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Operation Failed: database exception: {e}')

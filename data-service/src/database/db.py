@@ -226,6 +226,66 @@ async def get_user_movies(movie_ids, user_id: str):
     finally:
         pool.putconn(conn)
 
+async def get_movies():
+    pool = get_db()
+    if not pool:
+        raise Exception("Database Failed: Connection Pool Error")
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT id, last_watched::TEXT, watched, downloaded, download_path FROM Movies;", ())
+            movies = cur.fetchall()
+            # conn.commit()
+            for movie in movies:
+                movie = get_movie_dict(movie)
+            return movies
+    except psycopg.Error as e:
+        raise Exception(f"Failed to get UserMovies from the database: {e}")
+    finally:
+        pool.putconn(conn)
+
+
+async def update_movie(movie_id):
+    if not movie_id:
+        raise Exception("Can't update movie: Missing ID")
+    pool = get_db()
+    if not pool:
+        raise Exception("Database Failed: Connection Pool Error")
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE Movies SET downloaded = FALSE, download_path = '' WHERE id = %s;
+            """, (movie_id, ))
+            conn.commit()
+            cur.execute("""
+                SELECT id, last_watched::TEXT, watched, downloaded, download_path FROM Movies WHERE id = %s;
+            """, (movie_id, ))
+            movie = cur.fetchone()
+            # conn.commit()
+            return get_movie_dict(movie)
+    except pyscopg.Error as e:
+        raise Exception(f"Failed to update Movies table: {e}")
+    finally:
+        pool.putconn(conn)
+
+async def delete_movie(movie_id):
+    if not movie_id:
+        raise Exception("Can't delete movie: Missing ID")
+    pool = get_db()
+    if not pool:
+        raise Exception("Database Failed: Connection Pool Error")
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM Movies WHERE id = %s;", (movie_id, ))
+            conn.commit()
+            return
+    except pyscopg.Error as e:
+        raise Exception(f"Failed to delete Movies table: {e}")
+    finally:
+        pool.putconn(conn)
+
 # add comment
 async def add_comment(movie_id: str, author_id: str, comment: str):
     if not movie_id or not author_id or not comment:
