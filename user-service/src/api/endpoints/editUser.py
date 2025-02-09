@@ -8,7 +8,7 @@ router = APIRouter()
 
 @router.post('/username')
 async def update_username(request: Request, response: Response):
-    if not request.state.user_id:
+    if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
     try:
         body = await request.json()
@@ -17,7 +17,7 @@ async def update_username(request: Request, response: Response):
         return Response(status_code=400, content='Bad Request')
     if not body.get('username'):
         return Response(status_code=400, content='Bad Request')
-    update, error = updateUsername(request.state.user_id, body.get('username'))
+    update, error = updateUsername(request.headers.get("X-User-ID"), body.get('username'))
     if update is None:
         print('[Profile Router] update failed')
         return Response(status_code=400, content=f'Bad Request: {error.details()}')
@@ -26,7 +26,7 @@ async def update_username(request: Request, response: Response):
 
 @router.post('/email')
 async def update_email(request: Request, response: Response):
-    if not request.state.user_id:
+    if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
     try:
         body = await request.json()
@@ -35,7 +35,7 @@ async def update_email(request: Request, response: Response):
         return Response(status_code=400, content='Bad Request')
     if not body.get('email'):
         return Response(status_code=400, content='Bad Request')
-    update, error = updateEmail(request.state.user_id, body.get('email'))
+    update, error = updateEmail(request.headers.get("X-User-ID"), body.get('email'))
     if update is None:
         print('[Profile Router] update failed')
         return Response(status_code=400, content=f'Bad Request: {error.details()}')
@@ -44,7 +44,7 @@ async def update_email(request: Request, response: Response):
 
 @router.post('/first_name')
 async def update_firstname(request: Request, response: Response):
-    if not request.state.user_id:
+    if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
     try:
         body = await request.json()
@@ -53,7 +53,7 @@ async def update_firstname(request: Request, response: Response):
         return Response(status_code=400, content='Bad Request')
     if not body.get('first_name'):
         return Response(status_code=400, content='Bad Request')
-    update, error = updateFirstname(request.state.user_id, body.get('first_name'))
+    update, error = updateFirstname(request.headers.get("X-User-ID"), body.get('first_name'))
     if update is None:
         print('[Profile Router] update failed')
         return Response(status_code=400, content=f'Bad Request: {error.details()}')
@@ -62,7 +62,7 @@ async def update_firstname(request: Request, response: Response):
 
 @router.post('/last_name')
 async def update_lastname(request: Request, response: Response):
-    if not request.state.user_id:
+    if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
     try:
         body = await request.json()
@@ -71,7 +71,7 @@ async def update_lastname(request: Request, response: Response):
         return Response(status_code=400, content='Bad Request')
     if not body.get('last_name'):
         return Response(status_code=400, content='Bad Request')
-    update, error = updateLastname(request.state.user_id, body.get('last_name'))
+    update, error = updateLastname(request.headers.get("X-User-ID"), body.get('last_name'))
     if update is None:
         print('[Profile Router] update failed')
         return Response(status_code=400, content=f'Bad Request: {error.details()}')

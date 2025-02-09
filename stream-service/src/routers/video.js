@@ -44,7 +44,8 @@ function checkRange (movie_path, file_length, start, end, first_chunk, last_chun
 
 router.get('/', async (req, res) => {
     const range = req.headers.range
-    const { user_id, movie_id, hash } = req.query
+    const user_id = req.headers['x-user-id']
+    const { movie_id, hash } = req.query
 
     if (!range) {
         return res.status(416).json({error: "Missing Range"})

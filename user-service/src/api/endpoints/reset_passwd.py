@@ -14,7 +14,7 @@ load_dotenv()
 
 @router.get('/')
 async def send_passwdReset_email(request: Request, response: Response):
-    user = getUserById(request.state.user_id)
+    user = getUserById(request.headers.get("X-User-ID"))
     if user is None:
         print('user not found')
         return HTTPException(status_code=400, detail={'error': 'Bad Request'})

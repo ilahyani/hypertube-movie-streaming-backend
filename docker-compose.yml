@@ -3,7 +3,8 @@ services:
     image: postgres:latest
     container_name: database
     env_file:
-      - data-service/.env
+      - ./.env
+      # - data-service/.env
     networks:
       - hyper-network
     volumes:
@@ -14,7 +15,8 @@ services:
     image: python:3.12-slim
     container_name: migration
     env_file:
-      - data-service/.env
+      - ./.env
+      # - data-service/.env
     networks:
       - hyper-network
     volumes:
@@ -28,6 +30,7 @@ services:
   #   image: python:3.12-slim
   #   container_name: grpc
   #   env_file:
+  #     - ./.env
   #     - data-service/.env
   #   networks:
   #     - hyper-network
@@ -72,11 +75,25 @@ services:
       - ./auth-service:/app
       - ./grpc:/grpc
     env_file:
-      - ./auth-service/.env
+      - ./.env
+      # - ./auth-service/.env
     networks:
       - hyper-network
     depends_on:
       - migration
+    restart: on-failure
+
+  authorization-service:
+    build: ./authorization-service
+    image: authorization-service
+    container_name: authorization-service
+    volumes:
+      - ./authorization-service:/app
+      - ./grpc:/grpc
+    env_file:
+      - ./.env
+    networks:
+      - hyper-network
     restart: on-failure
 
   user-service:
@@ -87,7 +104,8 @@ services:
       - ./user-service:/app
       - ./grpc:/grpc
     env_file:
-      - ./user-service/.env
+      - ./.env
+      # - ./user-service/.env
     networks:
       - hyper-network
     depends_on:
@@ -104,7 +122,8 @@ services:
       - ./grpc:/grpc
       - ~/goinfre/hypertube:/downloads
     env_file:
-      - ./stream-service/.env
+      - ./.env
+      # - ./stream-service/.env
     networks:
       - hyper-network
     restart: on-failure
@@ -119,7 +138,8 @@ services:
       - ~/goinfre/hypertube:/downloads
       - /app/node_modules
     env_file:
-      - ./cron-service/.env
+      - ./.env
+      # - ./cron-service/.env
     networks:
       - hyper-network
     depends_on:

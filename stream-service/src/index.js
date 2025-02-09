@@ -3,7 +3,7 @@ const express = require('express')
 app = express()
 
 app.get('/api/stream', (req, res) => {
-    return res.json({'message': 'stream service is up!'})
+    return res.json({'message': `stream service is up! ${req.headers['x-user-id']}`})
 })
 
 app.use(express.json())

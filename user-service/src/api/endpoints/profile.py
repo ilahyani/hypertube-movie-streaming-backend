@@ -20,9 +20,9 @@ async def get_public_profile(id: str, request: Request, response: Response):
 
 @router.get('/private')
 async def get_private_profile(request: Request, response: Response):
-    if not request.state.user_id:
+    if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
-    user, error = getUserById(request.state.user_id)
+    user, error = getUserById(request.headers.get("X-User-ID"))
     if user is None:
         print('[Profile Router] user not found')
         return Response(status_code=400, content=f'Bad Request: {error.details()}')
