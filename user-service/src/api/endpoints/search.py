@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Response, Request
 from google.protobuf.json_format import MessageToDict
 from src.grpc.grpc_client import searchUsers
-from src.grpc import user_pb2 as user_pb2
+from src.grpc import hyper_pb2 as hyper_pb2
 from google.protobuf.json_format import MessageToDict
 
 router = APIRouter()
