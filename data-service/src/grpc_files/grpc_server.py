@@ -270,12 +270,12 @@ class loginServicer(user_pb2_grpc.loginServicer):
 
 class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
     def addMovie(self, request, context):
-        if not request.user_id or not request.movie_id or not request.download_path:
+        if not request.user_id or not request.movie_id or not request.download_path or not request.file_size:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: Missing data')
             return user_pb2.movieResponse()
         try:
-            res = asyncio.run(db.add_movie(request.movie_id, request.user_id, request.download_path))
+            res = asyncio.run(db.add_movie(request.movie_id, request.user_id, request.download_path, request.file_size))
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Operation Failed: database exception: {e}')
@@ -290,6 +290,7 @@ class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
             watched = res['watched'],
             downloaded = res['downloaded'],
             download_path = res['download_path'],
+            file_size = res['file_size'],
         ))
     
     def getMovie(self, request, context):
@@ -313,6 +314,7 @@ class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
             watched = res['watched'],
             downloaded = res['downloaded'],
             download_path = res['download_path'],
+            file_size = res['file_size'],
         ))
     
     def getUserMovies(self, request, context):
@@ -353,6 +355,7 @@ class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
                 watched = movie[2],
                 downloaded = movie[3],
                 download_path = movie[4],
+                file_size = movie[5],
             )
             results.append(_movie)
         logger.info(f'results {results}')
@@ -365,7 +368,7 @@ class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
             context.set_details('Operation Failed: Missing data')
             return user_pb2.movieResponse()
         try:
-            movie = asyncio.run(db.update_movie(request.movie_id))
+            movie = asyncio.run(db.update_movie(request.movie_id, request.downloaded or None, request.last_watched or None))
         except Exception as e:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f'Operation Failed: database exception: {e}')
@@ -377,6 +380,7 @@ class MovieServiceServicer(user_pb2_grpc.MovieServiceServicer):
             watched = movie['watched'],
             downloaded = movie['downloaded'],
             download_path = movie['download_path'],
+            file_size = movie['file_size'],
         )
         return user_pb2.movieResponse(movie=_movie)
 

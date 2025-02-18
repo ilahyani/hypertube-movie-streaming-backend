@@ -1,6 +1,7 @@
 import psycopg
 import bcrypt
 from src.database.db_pool import DatabasePool
+from datetime import datetime
 
 def get_db():
     try:
@@ -20,7 +21,7 @@ def get_user_dict(data):
 def get_movie_dict(data):
     movie = None
     if data is not None:
-        keys = ['id', 'last_watched', 'watched', 'downloaded', 'download_path']
+        keys = ['id', 'last_watched', 'watched', 'downloaded', 'download_path', 'file_size']
         movie = dict(zip(keys, data))
     return movie
 
@@ -160,8 +161,8 @@ async def search_users(search_query: str):
     return users
 
 # add movie
-async def add_movie(movie_id: str, user_id: str, download_path: str):
-    if not movie_id or not user_id:
+async def add_movie(movie_id: str, user_id: str, download_path: str, file_size: int):
+    if not movie_id or not user_id or not file_size:
         raise Exception("Missing data for movies table")
     pool = get_db()
     if not pool:
@@ -169,10 +170,10 @@ async def add_movie(movie_id: str, user_id: str, download_path: str):
     conn = pool.getconn()
     try:
         with conn.cursor() as cur:
-            cur.execute("INSERT INTO Movies (id, download_path) VALUES (%s, %s);", (movie_id, download_path))
+            cur.execute("INSERT INTO Movies (id, download_path, file_size) VALUES (%s, %s, %s) ON CONFLICT (id) DO NOTHING;", (movie_id, download_path, file_size))
             conn.commit()
-            cur.execute("INSERT INTO UserMovies (movie_id, user_id) VALUES (%s, %s);", (movie_id, user_id))
-            cur.execute("SELECT id, last_watched::TEXT, watched, downloaded, download_path FROM Movies WHERE id = %s", (movie_id, ))
+            cur.execute("INSERT INTO UserMovies (movie_id, user_id) VALUES (%s, %s) ON CONFLICT (movie_id, user_id) DO NOTHING;", (movie_id, user_id))
+            cur.execute("SELECT id, last_watched::TEXT, watched, downloaded, download_path, file_size FROM Movies WHERE id = %s", (movie_id, ))
             movie = cur.fetchone()
             conn.commit()
             return get_movie_dict(movie)
@@ -192,7 +193,7 @@ async def get_movie(movie_id):
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, last_watched::TEXT, watched, downloaded, download_path FROM Movies WHERE id = %s;
+                SELECT id, last_watched::TEXT, watched, downloaded, download_path, file_size FROM Movies WHERE id = %s;
             """, (movie_id, ))
             movie = cur.fetchone()
             conn.commit()
@@ -233,7 +234,7 @@ async def get_movies():
     conn = pool.getconn()
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT id, last_watched::TEXT, watched, downloaded, download_path FROM Movies;", ())
+            cur.execute("SELECT id, last_watched::TEXT, watched, downloaded, download_path, file_size FROM Movies;", ())
             movies = cur.fetchall()
             # conn.commit()
             for movie in movies:
@@ -245,7 +246,7 @@ async def get_movies():
         pool.putconn(conn)
 
 
-async def update_movie(movie_id):
+async def update_movie(movie_id, downloaded, last_watched):
     if not movie_id:
         raise Exception("Can't update movie: Missing ID")
     pool = get_db()
@@ -254,12 +255,18 @@ async def update_movie(movie_id):
     conn = pool.getconn()
     try:
         with conn.cursor() as cur:
-            cur.execute("""
-                UPDATE Movies SET downloaded = FALSE, download_path = '' WHERE id = %s;
-            """, (movie_id, ))
+            if downloaded is not None:
+                cur.execute("""
+                    UPDATE Movies SET downloaded = %s WHERE id = %s;
+                """, (downloaded, movie_id))
+            else:
+                current_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                cur.execute("""
+                    UPDATE Movies SET last_watched = %s WHERE id = %s;
+                """, (current_timestamp, movie_id))
             conn.commit()
             cur.execute("""
-                SELECT id, last_watched::TEXT, watched, downloaded, download_path FROM Movies WHERE id = %s;
+                SELECT id, last_watched::TEXT, watched, downloaded, download_path, file_size FROM Movies WHERE id = %s;
             """, (movie_id, ))
             movie = cur.fetchone()
             # conn.commit()

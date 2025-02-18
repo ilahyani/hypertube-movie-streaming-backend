@@ -17,8 +17,9 @@ router.get('/', async (req, res) => {
 
 router.post('/new', async (req, res) => {
     const { movie_id, comment } = req.body
+    const user_id = req.headers['x-user-id']
     try {
-        const result = await addCommentRPC(movie_id, 'ca17e1a5-aec8-482d-a159-d86f8bd1b55c', comment)
+        const result = await addCommentRPC(movie_id, user_id, comment)
         if (!result) {
             return res.status(500).json({ error: 'Failed to add comment'})
         }

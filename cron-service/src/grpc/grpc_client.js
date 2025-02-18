@@ -16,23 +16,28 @@ getMoviesRPC = () => {
                 console.log('getMoviesRPC ERROR:', err)
                 reject(err)
             }
-            console.log('getMoviesRPC RESPONSE:', response)
+            // console.log('getMoviesRPC RESPONSE:', response)
             resolve(response)
         })
     })
 }
 
-updateMovieRPC = (movie_id) => {
+updateMovieRPC = (movie_id, downloaded, last_watched) => {
     console.log('updateMovieRPC CALL')
 
     return new Promise((resolve, reject) => {
+        if (downloaded == null && last_watched == null) {
+            reject({ error: "invalid update data" })
+        }
         const client = new proto.MovieService(grpc_server, grpc.credentials.createInsecure())
-        client.updateMovie({ movie_id }, (err, response) => {
+        const request_object = downloaded != null
+            ? { movie_id, downloaded }
+            : { movie_id, last_watched }
+        client.updateMovie(request_object, (err, response) => {
             if (err) {
                 console.error('updateMovieRPC ERROR:', err)
                 reject(err)
             }
-            // console.log('updateMovieRPC RESPONSE:', response)
             resolve (response)
         })
     })
