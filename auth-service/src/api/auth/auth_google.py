@@ -52,11 +52,19 @@ async def gl_auth_callback(request: Request, response: Response):
             return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
     oauth_id = user_info.get('id')
-    email = user_info.get('email').lower()
+    picture = user_info.get('picture')
+    email = user_info.get('email')
+    if email is None:
+        return HTTPException(status_code=400, detail={"error": "Required data missing: email"})
+    email = email.lower()
     first_name = user_info.get('given_name')
     last_name = user_info.get('family_name') or user_info.get('given_name')
-    username = user_info.get('name').replace(" ", "_").lower()
-    picture = user_info.get('picture')
+    if first_name is None or last_name is None:
+        return HTTPException(status_code=400, detail={"error": "Required data missing: name"})
+    username = user_info.get('name')
+    if username is None:
+        return HTTPException(status_code=400, detail={"error": "Required data missing: username"})
+    username = username.replace(" ", "_").lower()
     try:
         user = register_user(oauth_id, email, first_name, last_name, username, picture)
     except Exception as e:
@@ -68,3 +76,4 @@ async def gl_auth_callback(request: Request, response: Response):
     response.set_cookie(key='access_token', value=access_token, httponly=True)
     response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
     return user
+    

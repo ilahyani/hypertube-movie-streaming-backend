@@ -52,11 +52,19 @@ async def ft_auth_callback(request: Request, response: Response):
             return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
     oauth_id = str(user_info.get('id'))
-    email = user_info.get('email').lower()
+    picture = user_info.get('image')['link']
+    email = user_info.get('email')
+    if email is None:
+        return HTTPException(status_code=400, detail={"error": "Required data missing: email"})
+    email = email.lower()
+    username = user_info.get('login')
+    if username is None:
+        return HTTPException(status_code=400, detail={"error": "Required data missing: username"})
+    username = username.lower()
     first_name = user_info.get('first_name')
     last_name = user_info.get('last_name')
-    username = user_info.get('login').lower()
-    picture = user_info.get('image')['link']
+    if first_name is None or last_name is None:
+        return HTTPException(status_code=400, detail={"error": "Required data missing: name"})
     try:
         user = register_user(oauth_id, email, first_name, last_name, username, picture)
     except Exception as e:

@@ -50,10 +50,18 @@ async def discord_auth_callback(request: Request, response: Response):
             return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
     oauth_id = user_info.get('id')
-    email = user_info.get('email').lower()
-    name = user_info.get('global_name')
-    username = user_info.get('username').lower()
     avatar = f'https://cdn.discordapp.com/avatars/{user_info.get('id')}/{user_info.get('avatar')}?size=256'
+    email = user_info.get('email')
+    if email is None:
+        return HTTPException(status_code=400, detail={"error": "Required data missing: email"})
+    email = email.lower()
+    name = user_info.get('global_name')
+    if name is None:
+            return HTTPException(status_code=400, detail={"error": "Required data missing: name"})
+    username = user_info.get('username')
+    if username is None:
+            return HTTPException(status_code=400, detail={"error": "Required data missing: username"})
+    username = username.lower()
     try:
         user = register_user(oauth_id, email, name, name, username, avatar)
     except Exception as e:
@@ -65,3 +73,4 @@ async def discord_auth_callback(request: Request, response: Response):
     response.set_cookie(key='access_token', value=access_token, httponly=True)
     response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
     return user
+    
