@@ -174,6 +174,46 @@ const update_last_watched = async (movie) => {
     }
 }
 
+/**
+ * @swagger
+ * /video:
+ *   get:
+ *     summary: Stream a movie
+ *     parameters:
+ *       - in: header
+ *         name: range
+ *         required: true
+ *         description: Byte range for streaming
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: movie_id
+ *         required: true
+ *         description: ID of the movie
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: magnet
+ *         required: true
+ *         description: Magnet link for the movie
+ *         schema:
+ *           type: string
+ *     responses:
+ *       206:
+ *         description: Partial content
+ *         content:
+ *           video/mp4:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       416:
+ *         description: Requested range is not available, try again shortly
+ *       400:
+ *         description: Missing or invalid parameters
+ *       500:
+ *         description: Internal Server Error
+ */
+
 router.get('/', async (req, res) => {
     const range = req.headers.range
     const user_id = req.headers['x-user-id']

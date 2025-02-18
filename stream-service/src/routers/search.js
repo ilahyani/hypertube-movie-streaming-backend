@@ -2,6 +2,76 @@ const router = require("express").Router({ mergeParams: true })
 const { getUserMoviesRPC } = require("../grpc/grpc_client")
 const TorrentSearchApi = require('torrent-search-api')
 
+/**
+ * @swagger
+ * /search:
+ *   get:
+ *     summary: Search for movies
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         required: false
+ *         description: Search query term
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         description: Page number
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: pageSize
+ *         required: false
+ *         description: Number of results per page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: sort
+ *         required: false
+ *         description: Sort order (r for rating, y for year, t for title)
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: cursor
+ *         required: false
+ *         description: Cursor for pagination
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of movies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 movies:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       title:
+ *                         type: string
+ *                       year:
+ *                         type: string
+ *                       rating:
+ *                         type: string
+ *                       thumbnail:
+ *                         type: string
+ *                       watched:
+ *                         type: boolean
+ *                 nextCursorMark:
+ *                   type: string
+ *       400:
+ *         description: Missing movie id
+ *       500:
+ *         description: Internal Server Error
+ */
+
+
 router.get('/', async (req, res) => {
 
     const user_id = req.headers['x-user-id']
@@ -92,6 +162,74 @@ router.get('/', async (req, res) => {
         return res.status(500).json({ error: 'Internal Server Error'})
     }
 })
+
+/**
+ * @swagger
+ * /search/{id}:
+ *   get:
+ *     summary: Get details of a specific movie
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the movie
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Movie details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                 summary:
+ *                   type: string
+ *                 year:
+ *                   type: string
+ *                 rating:
+ *                   type: string
+ *                 genre:
+ *                   type: string
+ *                 thumbnail:
+ *                   type: string
+ *                 director:
+ *                   type: string
+ *                 writer:
+ *                   type: string
+ *                 actors:
+ *                   type: string
+ *                 country:
+ *                   type: string
+ *                 torrents:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       resolution:
+ *                         type: string
+ *                       magnet:
+ *                         type: string
+ *                 subtitles:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       subtitle_id:
+ *                         type: string
+ *                       language:
+ *                         type: string
+ *                       url:
+ *                         type: string
+ *                 watched:
+ *                   type: boolean
+ *       400:
+ *         description: Missing movie id
+ *       500:
+ *         description: Internal Server Error
+ */
 
 router.get('/:id', async (req, res) => {
 
