@@ -6,23 +6,30 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from dotenv import load_dotenv
 from .jw_tokens import sign_tokens
 from .register_user import register_user
+import base64
 
 load_dotenv()
 router = APIRouter()
 
 @router.get('/')
 def ft_auth():
+    if not os.getenv("ft_client_id") or not os.getenv("ft_client_secret") or not os.getenv('ft_redirect_uri') or not os.getenv('oauth_state'):
+        return HTTPException(status_code=500, detail={"error": "Missing OAuth environment variables!"})
     client_id = f'client_id={os.getenv("ft_client_id")}'
     redirect_uri = f'redirect_uri={os.getenv('ft_redirect_uri')}'
     response_type = 'response_type=code'
     scope = 'scope=public'
-    state = f'state='
+    encoded_state = base64.b64encode(os.getenv('oauth_state').encode('utf-8')).decode('utf-8')
+    state = f'state={encoded_state}'
     ft_auth_url = f'https://api.intra.42.fr/oauth/authorize?{client_id}&{redirect_uri}&{response_type}&{scope}&{state}'
     return RedirectResponse(url=ft_auth_url)
 
 @router.get('/redirect')
 async def ft_auth_callback(request: Request, response: Response):
-    # state = request.query_params.get('state')
+    state = request.query_params.get('state')
+    decoded_state = base64.b64decode(state.encode('utf-8')).decode('utf-8')
+    if decoded_state != os.getenv('oauth_state'):
+        return HTTPException(status_code=400, detail='State does not match.')
     client_id = f'client_id={os.getenv("ft_client_id")}'
     client_secret = f'client_secret={os.getenv("ft_client_secret")}'
     code = f'code={request.query_params.get("code")}'
@@ -44,7 +51,6 @@ async def ft_auth_callback(request: Request, response: Response):
         if user_info_response.status_code != 200:
             return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
-    # print('[42_OAUTH]', user_info)
     oauth_id = str(user_info.get('id'))
     email = user_info.get('email').lower()
     first_name = user_info.get('first_name')

@@ -5,20 +5,28 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from dotenv import load_dotenv
 from .jw_tokens import sign_tokens
 from .register_user import register_user
+import base64
 
 load_dotenv()
 router = APIRouter()
 
 @router.get('/')
 async def discord_auth(request: Request, response: Response):
+    if not os.getenv("ft_client_id") or not os.getenv("ft_client_secret") or not os.getenv('ft_redirect_uri') or not os.getenv('oauth_state'):
+        return HTTPException(status_code=500, detail={"error": "Missing OAuth environment variables!"})
     client_id = f'client_id={os.getenv('dscrd_client_id')}'
     redirect_uri = f'redirect_uri={os.getenv('dscrd_redirect_uri')}'
-    url = f"https://discord.com/oauth2/authorize?{client_id}&response_type=code&{redirect_uri}&scope=email%20identify"
-    print(url)
+    encoded_state = base64.b64encode(os.getenv('oauth_state').encode('utf-8')).decode('utf-8')
+    state = f'state={encoded_state}'
+    url = f"https://discord.com/oauth2/authorize?{client_id}&response_type=code&{redirect_uri}&{state}&scope=email%20identify&"
     return RedirectResponse(url)
 
 @router.get('/redirect')
-async def discord_auth(request: Request, response: Response):
+async def discord_auth_callback(request: Request, response: Response):
+    state = request.query_params.get('state')
+    decoded_state = base64.b64decode(state.encode('utf-8')).decode('utf-8')
+    if decoded_state != os.getenv('oauth_state'):
+        return HTTPException(status_code=400, detail='State does not match.')
     data = {
         'client_id': os.getenv('dscrd_client_id'),
         'client_secret': os.getenv('dscrd_client_secret'),
@@ -41,7 +49,6 @@ async def discord_auth(request: Request, response: Response):
         if user_info_response.status_code != 200:
             return HTTPException(status_code=400, detail={"error": "Failed to retrieve user info"})
     user_info = user_info_response.json()
-    # print('[D_OAUTH]', user_info)
     oauth_id = user_info.get('id')
     email = user_info.get('email').lower()
     name = user_info.get('global_name')
