@@ -1,10 +1,10 @@
 const grpc = require('@grpc/grpc-js')
 const protoLoader = require('@grpc/proto-loader')
-const PROTO_PATH = '/grpc/user.proto'
+const PROTO_PATH = '/grpc/hyper.proto'
 
 const grpc_server = `${process.env.GRPC_SERVER_HOST}:${process.env.GRPC_SERVER_PORT}`
 const packageDef = protoLoader.loadSync(PROTO_PATH, { keepCase: true })
-const proto = grpc.loadPackageDefinition(packageDef).user
+const proto = grpc.loadPackageDefinition(packageDef).hyper
 
 addMovieRPC = (movie_id, user_id, download_path, file_size) => {
     console.log('addMovieRPC CALL')

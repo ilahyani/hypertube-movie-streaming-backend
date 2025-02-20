@@ -7,7 +7,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from src.grpc.grpc_client import getUserById
-from src.grpc import user_pb2 as user_pb2
+from src.grpc import hyper_pb2 as hyper_pb2
 
 router = APIRouter()
 load_dotenv()

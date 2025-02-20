@@ -13,23 +13,30 @@ commands = [
     [
         "python3", "-m", "grpc_tools.protoc",
         "-I=.",
-        "--python_out=../data-service/src/grpc_files",
-        "--grpc_python_out=../data-service/src/grpc_files",
-        "user.proto"
+        "--python_out=../data-service/src/grpc",
+        "--grpc_python_out=../data-service/src/grpc",
+        "hyper.proto"
     ],
     [
         "python3", "-m", "grpc_tools.protoc",
         "-I=.",
         "--python_out=../auth-service/src/grpc",
         "--grpc_python_out=../auth-service/src/grpc",
-        "user.proto"
+        "hyper.proto"
     ],
     [
         "python3", "-m", "grpc_tools.protoc",
         "-I=.",
         "--python_out=../user-service/src/grpc",
         "--grpc_python_out=../user-service/src/grpc",
-        "user.proto"
+        "hyper.proto"
+    ],
+    [
+        "python3", "-m", "grpc_tools.protoc",
+        "-I=.",
+        "--python_out=../authorization-service/src/grpc",
+        "--grpc_python_out=../authorization-service/src/grpc",
+        "hyper.proto"
     ]
 ]
 

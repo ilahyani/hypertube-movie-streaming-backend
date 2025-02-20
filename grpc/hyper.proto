@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-package user;
+package hyper;
+
+// // // // // // // // // // // //  AUTH API
 
 message User {
     string id = 1;
@@ -10,8 +12,6 @@ message User {
     string last_name = 5;
     string picture = 6;
 }
-
-// PW LOGIN API
 
 message Login_User {
     string id = 1;
@@ -31,12 +31,6 @@ message loginResponse {
     Login_User user = 1;
 }
 
-service login {
-    rpc loginService (loginRequest) returns (loginResponse);
-}
-
-// SIGNUP API
-
 message Signup_User {
     string email = 1;
     string first_name = 2;
@@ -54,12 +48,6 @@ message signupResponse {
     User user = 1;
 }
 
-service signup {
-    rpc signupService (signupRequest) returns (signupResponse);
-}
-
-// OAUTH API
-
 message addUserRequest {
     User user = 1;
     string oauth_id = 2;
@@ -69,11 +57,13 @@ message addUserResponse {
     User user = 1;
 }
 
-service addUser {
+service AuthService {
+    rpc loginService (loginRequest) returns (loginResponse);
+    rpc signupService (signupRequest) returns (signupResponse);
     rpc addUserService (addUserRequest) returns (addUserResponse);
 }
 
-// GET USER API
+// // // // // // // // // // // //  USER API
 
 message getUserRequest {
     string id = 1;
@@ -83,12 +73,6 @@ message getUserResponse {
     User user = 1;
 }
 
-service getUser {
-    rpc getUserService (getUserRequest) returns (getUserResponse);
-}
-
-// USER SEARCH API
-
 message searchUsersRequest {
     string query = 1;
 }
@@ -96,12 +80,6 @@ message searchUsersRequest {
 message searchUsersResponse {
     repeated User users = 1;
 }
-
-service searchUsers {
-    rpc searchUsersService (searchUsersRequest) returns (searchUsersResponse);
-}
-
-// USERNAME UPDATE API
 
 message updateUsernameRequest {
     string id = 1;
@@ -112,12 +90,6 @@ message updateUsernameResponse {
     User user = 1;
 }
 
-service updateUsername {
-    rpc updateUsernameService (updateUsernameRequest) returns (updateUsernameResponse);
-}
-
-// EMAIL UPDATE API
-
 message updateEmailRequest {
     string id = 1;
     string email = 2;
@@ -126,12 +98,6 @@ message updateEmailRequest {
 message updateEmailResponse {
     User user = 1;
 }
-
-service updateEmail {
-    rpc updateEmailService (updateEmailRequest) returns (updateEmailResponse);
-}
-
-// FIRST_NAME UPDATE API
 
 message updateFirstnameRequest {
     string id = 1;
@@ -142,12 +108,6 @@ message updateFirstnameResponse {
     User user = 1;
 }
 
-service updateFirstname {
-    rpc updateFirstnameService (updateFirstnameRequest) returns (updateFirstnameResponse);
-}
-
-// LAST_NAME UPDATE API
-
 message updateLastnameRequest {
     string id = 1;
     string last_name = 2;
@@ -157,16 +117,16 @@ message updateLastnameResponse {
     User user = 1;
 }
 
-service updateLastname {
+service UserService {
     rpc updateLastnameService (updateLastnameRequest) returns (updateLastnameResponse);
+    rpc updateFirstnameService (updateFirstnameRequest) returns (updateFirstnameResponse);
+    rpc updateEmailService (updateEmailRequest) returns (updateEmailResponse);
+    rpc updateUsernameService (updateUsernameRequest) returns (updateUsernameResponse);
+    rpc searchUsersService (searchUsersRequest) returns (searchUsersResponse);
+    rpc getUserService (getUserRequest) returns (getUserResponse);
 }
 
-
-// rename to hyper.proto
-// package hyper
-// // AUTH API
-// // USER API
-// // MOVIES API
+// // // // // // // // // // // //  MOVIES API
 
 message Movie {
     string id = 1;
@@ -174,6 +134,7 @@ message Movie {
     bool watched = 3;
     bool downloaded = 4;
     string download_path = 5;
+    int64 file_size = 6;
 }
 
 message movieResponse {
@@ -184,11 +145,26 @@ message addMovieRequest {
     string movie_id = 1;
     string user_id = 2;
     string download_path = 3;
+    int64 file_size = 4;
 }
 
 message getMoviesRequest {
     string movie_id = 1;
     // optional string user_id = 2;
+}
+
+message updateMovieRequest {
+    string movie_id = 1;
+    optional bool downloaded = 2;
+    optional bool last_watched = 3;
+}
+
+message deleteMovieRequest {
+    string movie_id = 1;
+}
+
+message deleteMovieResponse {
+    bool success = 1;
 }
 
 message getUserMoviesRequest {
@@ -200,10 +176,19 @@ message getUserMoviesResponse {
     repeated string movie_ids = 1;
 }
 
+message Empty {}
+
+message moviesResponse {
+    repeated Movie movies = 1;
+}
+
 service MovieService {
     rpc getMovie (getMoviesRequest) returns (movieResponse);
-    rpc getUserMovies (getUserMoviesRequest) returns (getUserMoviesResponse);
+    rpc getMovies (Empty) returns (moviesResponse);
     rpc addMovie (addMovieRequest) returns (movieResponse);
+    rpc updateMovie (updateMovieRequest) returns (movieResponse);
+    rpc getUserMovies (getUserMoviesRequest) returns (getUserMoviesResponse);
+    rpc deleteMovie (deleteMovieRequest) returns (deleteMovieResponse);
 }
 
 // // COMMENTS API
