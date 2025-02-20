@@ -4,7 +4,6 @@ services:
     container_name: database
     env_file:
       - ./.env
-      # - data-service/.env
     networks:
       - hyper-network
     volumes:
@@ -16,7 +15,6 @@ services:
     container_name: migration
     env_file:
       - ./.env
-      # - data-service/.env
     networks:
       - hyper-network
     volumes:
@@ -35,6 +33,15 @@ services:
       - ./grpc:/grpc
     depends_on:
       - migration
+    networks:
+      - hyper-network
+    restart: always
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    volumes:
+      - /tmp/redis-data:/data
     networks:
       - hyper-network
     restart: always
@@ -63,7 +70,6 @@ services:
       - ./grpc:/grpc
     env_file:
       - ./.env
-      # - ./auth-service/.env
     networks:
       - hyper-network
     depends_on:
@@ -92,7 +98,6 @@ services:
       - ./grpc:/grpc
     env_file:
       - ./.env
-      # - ./user-service/.env
     networks:
       - hyper-network
     depends_on:
@@ -110,7 +115,6 @@ services:
       - ~/goinfre/hypertube:/downloads
     env_file:
       - ./.env
-      # - ./stream-service/.env
     networks:
       - hyper-network
     restart: on-failure
@@ -126,7 +130,6 @@ services:
       - /app/node_modules
     env_file:
       - ./.env
-      # - ./cron-service/.env
     networks:
       - hyper-network
     depends_on:
