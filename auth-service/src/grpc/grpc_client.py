@@ -8,7 +8,7 @@ load_dotenv()
 channel = grpc.insecure_channel(f'{os.getenv('GRPC_SERVER_HOST')}:{os.getenv('GRPC_SERVER_PORT')}') 
 
 def addUser(user, oauth_id):
-    stub = hyper_pb2_grpc.addUserStub(channel)
+    stub = hyper_pb2_grpc.AuthServiceStub(channel)
     user_req = hyper_pb2.User(
         id=user['id'],
         email=user['email'],
@@ -26,7 +26,7 @@ def addUser(user, oauth_id):
     return res, None
 
 def signup(user):
-    stub = hyper_pb2_grpc.signupStub(channel)
+    stub = hyper_pb2_grpc.AuthServiceStub(channel)
     user_req = hyper_pb2.Signup_User(
         email = user['email'],
         first_name = user['first_name'],
@@ -44,7 +44,7 @@ def signup(user):
     return res, None
 
 def login_user(username):
-    stub = hyper_pb2_grpc.loginStub(channel)
+    stub = hyper_pb2_grpc.AuthServiceStub(channel)
     req = hyper_pb2.loginRequest(username=username)
     try:
         res = stub.loginService(req)

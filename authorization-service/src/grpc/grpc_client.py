@@ -8,7 +8,7 @@ load_dotenv()
 channel = grpc.insecure_channel(f'{os.getenv('GRPC_SERVER_HOST')}:{os.getenv('GRPC_SERVER_PORT')}') 
 
 def getUserById(id: str):
-    stub = hyper_pb2_grpc.getUserStub(channel)
+    stub = hyper_pb2_grpc.UserServiceStub(channel)
     req = hyper_pb2.getUserRequest(id=id)
     try:
         res = stub.getUserService(req)

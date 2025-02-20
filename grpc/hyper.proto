@@ -134,6 +134,7 @@ message Movie {
     bool watched = 3;
     bool downloaded = 4;
     string download_path = 5;
+    int64 file_size = 6;
 }
 
 message movieResponse {
@@ -144,10 +145,26 @@ message addMovieRequest {
     string movie_id = 1;
     string user_id = 2;
     string download_path = 3;
+    int64 file_size = 4;
 }
 
 message getMoviesRequest {
     string movie_id = 1;
+    // optional string user_id = 2;
+}
+
+message updateMovieRequest {
+    string movie_id = 1;
+    optional bool downloaded = 2;
+    optional bool last_watched = 3;
+}
+
+message deleteMovieRequest {
+    string movie_id = 1;
+}
+
+message deleteMovieResponse {
+    bool success = 1;
 }
 
 message getUserMoviesRequest {
@@ -159,13 +176,22 @@ message getUserMoviesResponse {
     repeated string movie_ids = 1;
 }
 
-service MovieService {
-    rpc getMovie (getMoviesRequest) returns (movieResponse);
-    rpc getUserMovies (getUserMoviesRequest) returns (getUserMoviesResponse);
-    rpc addMovie (addMovieRequest) returns (movieResponse);
+message Empty {}
+
+message moviesResponse {
+    repeated Movie movies = 1;
 }
 
-// // // // // // // // // // // //  COMMENTS API
+service MovieService {
+    rpc getMovie (getMoviesRequest) returns (movieResponse);
+    rpc getMovies (Empty) returns (moviesResponse);
+    rpc addMovie (addMovieRequest) returns (movieResponse);
+    rpc updateMovie (updateMovieRequest) returns (movieResponse);
+    rpc getUserMovies (getUserMoviesRequest) returns (getUserMoviesResponse);
+    rpc deleteMovie (deleteMovieRequest) returns (deleteMovieResponse);
+}
+
+// // COMMENTS API
 
 message Comment {
     string id = 1;
