@@ -18,18 +18,20 @@ services:
     networks:
       - hyper-network
     volumes:
-      - ./db-migrations:/tmp/db
+      - ./services/migration-service:/tmp/db
     depends_on:
       - database
     command: ["sh", "-c", "/tmp/db/init.sh"]
     restart: "no"
 
   data-service:
-    build: ./data-service
+    build: ./services/data-service
     image: data-service
     container_name: data-service
+    env_file:
+      - ./.env
     volumes:
-      - ./data-service:/app
+      - ./services/data-service:/app
       - ./grpc:/grpc
     depends_on:
       - migration
@@ -62,11 +64,11 @@ services:
     restart: always
   
   auth-service:
-    build: ./auth-service
+    build: ./services/auth-service
     image: auth-service
     container_name: auth-service
     volumes:
-      - ./auth-service:/app
+      - ./services/auth-service:/app
       - ./grpc:/grpc
     env_file:
       - ./.env
@@ -77,11 +79,11 @@ services:
     restart: on-failure
 
   authorization-service:
-    build: ./authorization-service
+    build: ./services/authorization-service
     image: authorization-service
     container_name: authorization-service
     volumes:
-      - ./authorization-service:/app
+      - ./services/authorization-service:/app
       - ./grpc:/grpc
     env_file:
       - ./.env
@@ -90,11 +92,11 @@ services:
     restart: on-failure
 
   user-service:
-    build: ./user-service
+    build: ./services/user-service
     image: user-service
     container_name: user-service
     volumes:
-      - ./user-service:/app
+      - ./services/user-service:/app
       - ./grpc:/grpc
     env_file:
       - ./.env
@@ -105,11 +107,11 @@ services:
     restart: on-failure
 
   stream-service:
-    build: ./stream-service
+    build: ./services/stream-service
     image: stream-service
     container_name: stream-service
     volumes:
-      - ./stream-service:/app
+      - ./services/stream-service:/app
       - /app/node_modules
       - ./grpc:/grpc
       - ~/goinfre/hypertube:/downloads
@@ -120,11 +122,11 @@ services:
     restart: on-failure
 
   cron-service:
-    build: ./cron-service
+    build: ./services/cron-service
     image: cron-service
     container_name: cron-service
     volumes:
-      - ./cron-service:/app
+      - ./services/cron-service:/app
       - ./grpc:/grpc
       - ~/goinfre/hypertube:/downloads
       - /app/node_modules

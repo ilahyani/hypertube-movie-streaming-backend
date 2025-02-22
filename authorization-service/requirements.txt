@@ -1,6 +1,0 @@
-fastapi==0.112.1
-fastapi-cli==0.0.5
-grpcio==1.66.2
-grpcio-tools<=1.66.2
-protobuf==5.27.2
-PyJWT==2.9.0
