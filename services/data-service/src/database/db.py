@@ -121,11 +121,8 @@ async def update_user_data(id: str, field: str, value: str):
     try:
         with conn.cursor() as cur:
             cur.execute(f"UPDATE Users SET {field} = %s WHERE id = %s;", (value.lower(), id))
-            rows_updated = cur.rowcount
             conn.commit()
-            # return rows_updated
     except psycopg.Error as e:
-        print(f"update_db() failed: {e}")
         if e.sqlstate == '23505':
             unique_key = ''
             if 'email' in str(e):
@@ -134,7 +131,6 @@ async def update_user_data(id: str, field: str, value: str):
                 unique_key = 'username'
             raise Exception(f"An account with this {unique_key} already exists")
         raise Exception("Database Failed")
-    # await update_db(query, (value.lower(), id))
     return await get_user_by_id(id)
 
 async def update_username(id: str, username: str):
@@ -148,6 +144,31 @@ async def update_firstname(id: str, first_name: str):
 
 async def update_lastname(id: str, last_name: str):
     return await update_user_data(id, 'last_name', last_name)
+
+async def update_password(id: str, old_password: str, new_password: str):
+    data = await fetch_db("SELECT * FROM Users WHERE id = %s ;", (id, ))
+    if data is None:
+        return data
+    user = _convert_to_user_dict(data)
+    if user is None:
+        return user
+    if bcrypt.checkpw(old_password.encode(), user['passwd'].encode()) is False:
+        raise Exception("Old Password invalid")
+    pool = get_conn_pool()
+    if pool is None:
+        print("Database connection pool is not available.")
+        raise Exception("Database Failed: Connection Pool Error")
+    passwd = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+    passwd = passwd.decode('utf-8')
+    conn = pool.getconn()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(f"UPDATE Users SET passwd = %s WHERE id = %s;", (passwd, id))
+            conn.commit()
+    except psycopg.Error as e:
+        raise Exception("Database Failed")
+    del user['passwd']
+    return user
 
 async def search_users(search_query: str):
     users = await fetch_db("SELECT * FROM Users WHERE username LIKE %s;", (f'{search_query.lower()}%', ), True)

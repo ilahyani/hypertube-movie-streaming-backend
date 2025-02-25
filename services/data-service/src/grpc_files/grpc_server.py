@@ -29,22 +29,22 @@ class UserServiceServicer(hyper_pb2_grpc.UserServiceServicer):
         if not request.id:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('id is required to fetch the user')
-            return hyper_pb2.getUserResponse()
+            return hyper_pb2.userResponse()
         try:
             user = asyncio.run(db.get_user_by_id(request.id))
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(f'[getUserService] database exception: {e}')
             logger.info(f'database exception: {e}')
-            return hyper_pb2.getUserResponse()
+            return hyper_pb2.userResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('invalid user id')
-            return hyper_pb2.getUserResponse()
+            return hyper_pb2.userResponse()
         logger.info(f'get_user_by_id: {user}')
         user_response = user_dict_to_pb2_user(user)
         logger.info(f'getUserService succeeded: {user_response}')
-        return hyper_pb2.getUserResponse(user=user_response)
+        return hyper_pb2.userResponse(user=user_response)
 
     def searchUsersService(self, request, context):
         logger.info(f'Received searchUsersServicer request: {request}')
@@ -83,7 +83,7 @@ class UserServiceServicer(hyper_pb2_grpc.UserServiceServicer):
         if not request.id or not request.username:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
-            return hyper_pb2.updateUsernameResponse()
+            return hyper_pb2.userResponse()
         try:
             user = asyncio.run(db.update_username(request.id, request.username))
         except Exception as e:
@@ -94,77 +94,99 @@ class UserServiceServicer(hyper_pb2_grpc.UserServiceServicer):
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
-            return hyper_pb2.updateUsernameResponse()
+            return hyper_pb2.userResponse()
         logger.info(f'update_username: {user}')
         user_response = user_dict_to_pb2_user(user)
         logger.info(f'updateUsernameService succeeded: {user_response}')
-        return hyper_pb2.updateUsernameResponse(user=user_response)
+        return hyper_pb2.userResponse(user=user_response)
 
     def updateEmailService(self, request, context):
         logger.info(f'Received updateEmailServicer request: {request}')
         if not request.id or not request.email:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
-            return hyper_pb2.updateEmailResponse()
+            return hyper_pb2.userResponse()
         try:
             user = asyncio.run(db.update_email(request.id, request.email))
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(f'[updateEmailService] database exception: {e}')
             logger.info(f'database exception: {e}')
-            return hyper_pb2.updateEmailResponse()
+            return hyper_pb2.userResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
-            return hyper_pb2.updateEmailResponse()
+            return hyper_pb2.userResponse()
         logger.info(f'updateEmailService: {user}')
         user_response = user_dict_to_pb2_user(user)
         logger.info(f'updateEmailService succeeded: {user_response}')
-        return hyper_pb2.updateEmailResponse(user=user_response)
+        return hyper_pb2.userResponse(user=user_response)
 
     def updateFirstnameService(self, request, context):
         logger.info(f'Received updateFirstnameServicer request: {request}')
         if not request.id or not request.first_name:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
-            return hyper_pb2.updateFirstnameResponse()
+            return hyper_pb2.userResponse()
         try:
             user = asyncio.run(db.update_firstname(request.id, request.first_name))
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(f'[updateFirstnameService] database exception: {e}')
             logger.info(f'database exception: {e}')
-            return hyper_pb2.updateFirstnameResponse()
+            return hyper_pb2.userResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
-            return hyper_pb2.updateFirstnameResponse()
+            return hyper_pb2.userResponse()
         logger.info(f'updateFirstnameService: {user}')
         user_response = user_dict_to_pb2_user(user)
         logger.info(f'updateFirstnameService succeeded: {user_response}')
-        return hyper_pb2.updateFirstnameResponse(user=user_response)
+        return hyper_pb2.userResponse(user=user_response)
 
     def updateLastnameService(self, request, context):
         logger.info(f'Received updateLastnameService request: {request}')
         if not request.id or not request.last_name:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
-            return hyper_pb2.updateLastnameResponse()
+            return hyper_pb2.userResponse()
         try:
             user = asyncio.run(db.update_lastname(request.id, request.last_name))
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(f'[updateLastnameService] database exception: {e}')
             logger.info(f'database exception: {e}')
-            return hyper_pb2.updateLastnameResponse()
+            return hyper_pb2.userResponse()
         if user is None:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: invalid data')
-            return hyper_pb2.updateLastnameResponse()
+            return hyper_pb2.userResponse()
         logger.info(f'updateLastnameService: {user}')
         user_response = user_dict_to_pb2_user(user)
         logger.info(f'updateLastnameService succeeded: {user_response}')
-        return hyper_pb2.updateLastnameResponse(user=user_response)
+        return hyper_pb2.userResponse(user=user_response)
+    
+    def updatePasswordService(self, request, context):
+        logger.info(f'Received updatePasswordService request: {request}')
+        if not request.id or not request.old_password or not request.new_password:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: missing data')
+            return hyper_pb2.userResponse()
+        try:
+            user = asyncio.run(db.update_password(request.id, request.old_password, request.new_password))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[updatePasswordService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return hyper_pb2.userResponse()
+        if user is None:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: invalid data')
+            return hyper_pb2.userResponse()
+        logger.info(f'updatePasswordService: {user}')
+        user_response = user_dict_to_pb2_user(user)
+        logger.info(f'updatePasswordService succeeded: {user_response}')
+        return hyper_pb2.userResponse(user=user_response)
 
 class AuthServiceServicer(hyper_pb2_grpc.AuthServiceServicer):
     def loginService(self, request, context):

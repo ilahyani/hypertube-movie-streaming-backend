@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Response, Request, Response
 from fastapi.responses import JSONResponse
 from google.protobuf.json_format import MessageToDict
-from src.grpc.grpc_client import getUserById, updateUsername, updateEmail, updateFirstname, updateLastname
+from src.grpc.grpc_client import getUserById, updateUsername, updateEmail, updateFirstname, updateLastname, updatePassword
 from src.grpc import hyper_pb2 as hyper_pb2
 
 router = APIRouter()
@@ -78,6 +78,23 @@ async def update_lastname(request: Request, response: Response):
     update = MessageToDict(update, preserving_proto_field_name=True)
     return update
 
-#TODO: Passwd and Avatar edit
-# @router.post('/passwd')
+@router.post('/passwd')
+async def update_password(request: Request, response: Response):
+    if not request.headers.get("X-User-ID"):
+        return Response(status_code=403, content='Forbidden')
+    try:
+        body = await request.json()
+    except Exception as e:
+        print(f'[Profile Router] Failed to parse body: {e}')
+        return Response(status_code=400, content='Bad Request')
+    if not body.get('old_password') or not body.get('new_password'):
+        return Response(status_code=400, content='Bad Request')
+    update, error = updatePassword(request.headers.get("X-User-ID"), body.get('old_password'), body.get('new_password'))
+    if update is None:
+        print('[Profile Router] update failed')
+        return Response(status_code=400, content=f'Bad Request: {error.details()}')
+    update = MessageToDict(update, preserving_proto_field_name=True)
+    return update
+
+#TODO
 # @router.post('/avatar')

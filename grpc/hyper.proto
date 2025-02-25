@@ -65,14 +65,6 @@ service AuthService {
 
 // // // // // // // // // // // //  USER API
 
-message getUserRequest {
-    string id = 1;
-}
-
-message getUserResponse {
-    User user = 1;
-}
-
 message searchUsersRequest {
     string query = 1;
 }
@@ -81,13 +73,13 @@ message searchUsersResponse {
     repeated User users = 1;
 }
 
+message getUserRequest {
+    string id = 1;
+}
+
 message updateUsernameRequest {
     string id = 1;
     string username = 2;
-}
-
-message updateUsernameResponse {
-    User user = 1;
 }
 
 message updateEmailRequest {
@@ -95,17 +87,9 @@ message updateEmailRequest {
     string email = 2;
 }
 
-message updateEmailResponse {
-    User user = 1;
-}
-
 message updateFirstnameRequest {
     string id = 1;
     string first_name = 2;
-}
-
-message updateFirstnameResponse {
-    User user = 1;
 }
 
 message updateLastnameRequest {
@@ -113,17 +97,24 @@ message updateLastnameRequest {
     string last_name = 2;
 }
 
-message updateLastnameResponse {
+message updatePasswordRequest {
+    string id = 1;
+    string old_password = 2;
+    string new_password = 3;
+}
+
+message userResponse {
     User user = 1;
 }
 
 service UserService {
-    rpc updateLastnameService (updateLastnameRequest) returns (updateLastnameResponse);
-    rpc updateFirstnameService (updateFirstnameRequest) returns (updateFirstnameResponse);
-    rpc updateEmailService (updateEmailRequest) returns (updateEmailResponse);
-    rpc updateUsernameService (updateUsernameRequest) returns (updateUsernameResponse);
     rpc searchUsersService (searchUsersRequest) returns (searchUsersResponse);
-    rpc getUserService (getUserRequest) returns (getUserResponse);
+    rpc getUserService (getUserRequest) returns (userResponse);
+    rpc updateUsernameService (updateUsernameRequest) returns (userResponse);
+    rpc updateFirstnameService (updateFirstnameRequest) returns (userResponse);
+    rpc updateLastnameService (updateLastnameRequest) returns (userResponse);
+    rpc updateEmailService (updateEmailRequest) returns (userResponse);
+    rpc updatePasswordService (updatePasswordRequest) returns (userResponse);
 }
 
 // // // // // // // // // // // //  MOVIES API
