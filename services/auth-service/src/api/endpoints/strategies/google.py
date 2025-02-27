@@ -77,7 +77,7 @@ async def gl_auth_callback(request: Request, response: Response):
         return HTTPException(status_code=400, detail={"error": "Required data missing: username"})
     username = username.replace(" ", "_").lower()
     try:
-        user = register_user(oauth_id, email, first_name, last_name, username, picture)
+        user = await register_user(oauth_id, email, first_name, last_name, username, picture)
     except Exception as e:
         print('[G_OAUTH]', e)
         return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})

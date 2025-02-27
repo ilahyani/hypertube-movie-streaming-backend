@@ -70,6 +70,19 @@ def updateLastname(id: str, last_name: str):
     channel.close()
     return res, None
 
+def updatePicture(id: str, picture: str):
+    channel = grpc.insecure_channel(f'{os.getenv('GRPC_SERVER_HOST')}:{os.getenv('GRPC_SERVER_PORT')}')
+    stub = hyper_pb2_grpc.UserServiceStub(channel)
+    req = hyper_pb2.updatePictureRequest(id=id, picture=picture)
+    try:
+        res = stub.updatePictureService(req)
+    except Exception as e:
+        print(f'[gRPC Client] method updatePicture Failed: {e}')
+        channel.close()
+        return None, e
+    channel.close()
+    return res, None
+
 def updatePassword(id: str, old_password: str, new_password: str):
     channel = grpc.insecure_channel(f'{os.getenv('GRPC_SERVER_HOST')}:{os.getenv('GRPC_SERVER_PORT')}')
     stub = hyper_pb2_grpc.UserServiceStub(channel)

@@ -165,6 +165,28 @@ class UserServiceServicer(hyper_pb2_grpc.UserServiceServicer):
         user_response = user_dict_to_pb2_user(user)
         logger.info(f'updateLastnameService succeeded: {user_response}')
         return hyper_pb2.userResponse(user=user_response)
+
+    def updatePictureService(self, request, context):
+        logger.info(f'Received updatePictureService request: {request}')
+        if not request.id or not request.picture:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: missing data')
+            return hyper_pb2.userResponse()
+        try:
+            user = asyncio.run(db.update_picture(request.id, request.picture))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[updatePictureService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return hyper_pb2.userResponse()
+        if user is None:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: invalid data')
+            return hyper_pb2.userResponse()
+        logger.info(f'updatePictureService: {user}')
+        user_response = user_dict_to_pb2_user(user)
+        logger.info(f'updatePictureService succeeded: {user_response}')
+        return hyper_pb2.userResponse(user=user_response)
     
     def updatePasswordService(self, request, context):
         logger.info(f'Received updatePasswordService request: {request}')

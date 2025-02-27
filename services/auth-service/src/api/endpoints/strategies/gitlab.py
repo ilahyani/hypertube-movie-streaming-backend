@@ -88,7 +88,7 @@ async def gt_auth_callback(request: Request, response: Response):
     first_name = parts[0]
     last_name = parts[1] if len(parts) > 1 else parts[0]
     try:
-        user = register_user(oauth_id, email, first_name, last_name, username, picture)
+        user = await register_user(oauth_id, email, first_name, last_name, username, picture)
     except Exception as e:
         print('[42_OAUTH]', e)
         return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})

@@ -80,7 +80,7 @@ async def ft_auth_callback(request: Request, response: Response):
     if first_name is None or last_name is None:
         return HTTPException(status_code=400, detail={"error": "Required data missing: name"})
     try:
-        user = register_user(oauth_id, email, first_name, last_name, username, picture)
+        user = await register_user(oauth_id, email, first_name, last_name, username, picture)
     except Exception as e:
         print('[42_OAUTH]', e)
         return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})

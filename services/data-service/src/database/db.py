@@ -145,6 +145,9 @@ async def update_firstname(id: str, first_name: str):
 async def update_lastname(id: str, last_name: str):
     return await update_user_data(id, 'last_name', last_name)
 
+async def update_picture(id: str, picture: str):
+    return await update_user_data(id, 'picture', picture)
+
 async def update_password(id: str, old_password: str, new_password: str):
     data = await fetch_db("SELECT * FROM Users WHERE id = %s ;", (id, ))
     if data is None:
