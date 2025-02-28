@@ -3,7 +3,7 @@ Hypertube, Over Engineered Movie Streaming Platform Backend With Microservices A
 
 ## Overview:
 #### Project Description
-This is the backend of a movie streaming web application where user can create accounts, search and stream movies and leave 
+This is the backend of a movie streaming web application where users can create accounts, search and stream movies and leave 
 comments on movies.
 
 #### The Stack
@@ -15,6 +15,7 @@ comments on movies.
 * Nginx
 * gRPC
 * Docker
+* AWS S3 (for saving users' profile pictures)
 
 ## Inter-service Communication: gRPC
 gRPC (Google Remote Procedure Call) is used as the primary method of communication between microservices. gRPC is a high-performance, open-source framework that enables services to communicate with each other efficiently, using HTTP/2 as the transport protocol and Protocol Buffers (protobuf) as the serialization format for data exchange. It allows for the definition of services and their methods using a .proto file, which provide a clear structure for both the request and response formats. Each service exposes specific RPC (Remote Procedure Call) methods like loginService, signupService, getUserService, etc., for other services to invoke. For example, the AuthService manages user authentication requests, while the MovieService manages movie data. These services communicate with each other by sending requests and receiving responses in the form of structured data defined in the hyper.proto.
