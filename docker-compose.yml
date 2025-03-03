@@ -138,6 +138,16 @@ services:
       - database
     restart: on-failure
 
+  recommendations-service:
+    build: ./services/recommendations-service
+    image: recommendations-service
+    container_name: recommendations-service
+    volumes:
+      - ./services/recommendations-service:/app
+    networks:
+      - hyper-network
+    restart: on-failure
+
 networks:
   hyper-network:
     driver: bridge
