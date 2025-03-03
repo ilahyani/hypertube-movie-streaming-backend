@@ -7,7 +7,7 @@ load_dotenv()
 def sign_tokens(user):
     access_payload = {
         'sub': user.get('id'),
-        'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=30)
+        'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(days=1)
     }
     refresh_payload = {
         'sub': user.get('id'),
