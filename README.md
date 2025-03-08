@@ -19,22 +19,13 @@ comments on movies.
 
 ## NLP movie recommendation sytem
 In the recommendations-service, I implemented a movie recommendation system that uses semantic search to suggest movies based on their descriptions. The system leverages natural language processing (NLP) techniques, such as sentence embeddings and cosine similarity, to find movies with similar plot synopses to a given query.
-### How It Works
-* Generating Movie Embeddings (generate_embeddings.py)
 Before making recommendations, the system preprocesses the dataset by converting movie descriptions into numerical representations (embeddings).
-It loads the movie dataset (mpst_full_data.json) and extracts the plot synopses.
-It uses the all-MiniLM-L6-v2 model from SentenceTransformers to generate dense vector embeddings for each movie description.
-These embeddings capture the semantic meaning of the descriptions.
-The generated embeddings are stored in a .npy file (movie_embeddings.npy) for efficient retrieval.
-* Running the FastAPI Service (main.py)
-The FastAPI-based backend exposes an API endpoint for movie recommendations.
-
-It loads the dataset and precomputed movie embeddings.
+It loads the movie dataset (mpst_full_data.json) and extracts the plot synopses and it uses the `all-MiniLM-L6-v2` model from `SentenceTransformers` to generate dense vector embeddings for each movie description. These embeddings capture the semantic meaning of the descriptions and are stored in a .npy file (movie_embeddings.npy) for efficient retrieval.
 When a user submits a query, the system:
-Converts the query into an embedding using the same transformer model.
-Computes cosine similarity between the query embedding and all movie embeddings.
-Finds the top 10 most similar movies based on similarity scores.
-Returns the recommended movies in a structured JSON response.
+- Converts the query into an embedding using the same transformer model.
+- Computes cosine similarity between the query embedding and all movie embeddings.
+- Finds the top 10 most similar movies based on similarity scores.
+- Returns the top 10 matched recommended movies in a structured JSON response.
 
 ## Inter-service Communication: gRPC
 gRPC (Google Remote Procedure Call) is used as the primary method of communication between microservices. gRPC is a high-performance, open-source framework that enables services to communicate with each other efficiently, using HTTP/2 as the transport protocol and Protocol Buffers (protobuf) as the serialization format for data exchange. It allows for the definition of services and their methods using a .proto file, which provide a clear structure for both the request and response formats. Each service exposes specific RPC (Remote Procedure Call) methods like loginService, signupService, getUserService, etc., for other services to invoke. For example, the AuthService manages user authentication requests, while the MovieService manages movie data. These services communicate with each other by sending requests and receiving responses in the form of structured data defined in the hyper.proto.
