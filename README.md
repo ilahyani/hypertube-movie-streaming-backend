@@ -16,6 +16,7 @@ comments on movies.
 * gRPC
 * Docker
 * AWS S3 (for saving users' profile pictures)
+* sentence_transformers
 
 ## NLP movie recommendation sytem
 In the recommendations-service, I implemented a movie recommendation system that uses semantic search to suggest movies based on their descriptions. The system leverages natural language processing (NLP) techniques, such as sentence embeddings and cosine similarity, to find movies with similar plot synopses to a given query.
