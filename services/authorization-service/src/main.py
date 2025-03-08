@@ -41,4 +41,5 @@ def authorize(req: Request, res: Response):
         print(f'USER NOT FOUND: {payload['sub']}')
         raise HTTPException(status_code=403)
     res.headers["X-User-ID"] = payload['sub']
+    res.headers["Authorization"] = req.headers.get("Authorization")
     return {}

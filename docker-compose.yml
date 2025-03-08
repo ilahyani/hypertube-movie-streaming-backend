@@ -61,6 +61,7 @@ services:
       - auth-service
       - user-service
       - stream-service
+      - recommendations-service
     restart: always
   
   auth-service:
@@ -142,6 +143,8 @@ services:
     build: ./services/recommendations-service
     image: recommendations-service
     container_name: recommendations-service
+    env_file:
+      - ./.env
     volumes:
       - ./services/recommendations-service:/app
     networks:
