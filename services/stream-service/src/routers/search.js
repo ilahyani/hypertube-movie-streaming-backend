@@ -238,7 +238,7 @@ router.get('/:id', async (req, res) => {
     const movie_id = req.params.id
 
     if (!movie_id) {
-        res.status(400).json({ error: 'Missing movie id' })
+        return res.status(400).json({ error: 'Missing movie id' })
     }
 
     try {
@@ -259,6 +259,9 @@ router.get('/:id', async (req, res) => {
                     resolution: resolution,
                     magnet: await TorrentSearchApi.getMagnet(torrent[0])
                 })
+            }
+            else {
+                return res.status(404).json({ "Error": "Movie Not Found" })
             }
         }
         
