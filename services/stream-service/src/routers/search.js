@@ -1,4 +1,5 @@
 const router = require("express").Router({ mergeParams: true })
+const { json } = require("express")
 const { getUserMoviesRPC } = require("../grpc/grpc_client")
 const TorrentSearchApi = require('torrent-search-api')
 
@@ -261,19 +262,55 @@ router.get('/:id', async (req, res) => {
             }
         }
         
-        const subtitles_response = await fetch(`${process.env.OPENSUB_API}?imdb_id=${movie_id}&languages=en,fr`, {
+        const subtitles_response = await fetch(`${process.env.OPENSUB_API}/subtitles?imdb_id=${movie_id}&languages=en,fr`, {
             headers: {
                 'Api-Key': process.env.OPENSUB_API_KEY
             }
         })
+        
         let subtitles = await subtitles_response.json()
         if (subtitles.total_count > 0) {
             const en_sub = subtitles.data.filter(sub => sub.attributes.language === 'en')[0];
             const fr_sub = subtitles.data.filter(sub => sub.attributes.language === 'fr')[0];
-            subtitles = [en_sub, fr_sub].map((sub) => {
-                const { subtitle_id, language, url } = sub.attributes
+
+            subtitlePromises = await [en_sub, fr_sub].map(async (sub) => {
+                if (!sub?.attributes) {
+                    return null
+                }
+
+                const { subtitle_id, language } = sub.attributes
+                let url = null;
+                let file_id = null;
+                
+                for (const file of sub.attributes.files) {
+                    if (file && file.file_id) {
+                        file_id = file.file_id
+                        break
+                    }
+                }
+
+                if (file_id) {
+                    const subtitles_url_res = await fetch(`${process.env.OPENSUB_API}/download`, {
+                        method: 'POST',
+                        headers: {
+                            'Api-Key': process.env.OPENSUB_API_KEY,
+                            'Content-Type': 'application/json',
+                            'User-Agent': 'HyperTUUUUUUBE'
+                        },
+                        body: JSON.stringify({
+                            'file_id': file_id,
+                            "sub_format": "webvtt"
+                        }),
+                    })
+                    const json_res = await subtitles_url_res.json()
+                    if (json_res.link) {
+                        url = json_res.link
+                    }
+                }
                 return  { subtitle_id, language, url }
             })
+
+            subtitles = await Promise.all(subtitlePromises)
         }
 
         return res.status(200).json({
