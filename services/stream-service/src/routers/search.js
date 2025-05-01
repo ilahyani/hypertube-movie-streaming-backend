@@ -313,7 +313,7 @@ router.get('/:id', async (req, res) => {
                 return  { subtitle_id, language, url }
             })
 
-            subtitles = await Promise.all(subtitlePromises)
+            subtitles_links = await Promise.all(subtitlePromises)
         }
 
         return res.status(200).json({
@@ -327,8 +327,8 @@ router.get('/:id', async (req, res) => {
             writer: data.Writer,
             actors: data.Actors,
             country: data.Country,
-            torrents: torrents,
-            subtitles: subtitles,
+            torrents: torrents || [],
+            subtitles: subtitles_links || [],
             watched: watched_movies?.includes(data.imdbID.toString()) || false
         })
     } catch (error) {
