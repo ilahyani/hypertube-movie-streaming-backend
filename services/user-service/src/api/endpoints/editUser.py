@@ -10,7 +10,7 @@ from src.grpc import hyper_pb2 as hyper_pb2
 
 router = APIRouter()
 
-@router.post('/username')
+# @router.post('/username') # DEPRICATED
 async def update_username(request: Request, response: Response):
     if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
@@ -28,7 +28,7 @@ async def update_username(request: Request, response: Response):
     update = MessageToDict(update, preserving_proto_field_name=True)
     return update
 
-@router.post('/email')
+# @router.post('/email') # DEPRICATED
 async def update_email(request: Request, response: Response):
     if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
@@ -46,7 +46,7 @@ async def update_email(request: Request, response: Response):
     update = MessageToDict(update, preserving_proto_field_name=True)
     return update
 
-@router.post('/first_name')
+# @router.post('/first_name') # DEPRICATED
 async def update_firstname(request: Request, response: Response):
     if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
@@ -64,7 +64,7 @@ async def update_firstname(request: Request, response: Response):
     update = MessageToDict(update, preserving_proto_field_name=True)
     return update
 
-@router.post('/last_name')
+# @router.post('/last_name') # DEPRICATED
 async def update_lastname(request: Request, response: Response):
     if not request.headers.get("X-User-ID"):
         return Response(status_code=403, content='Forbidden')
@@ -80,6 +80,47 @@ async def update_lastname(request: Request, response: Response):
         print('[Profile Router] update failed')
         raise HTTPException(status_code=400, detail={ "error": error.details() })
     update = MessageToDict(update, preserving_proto_field_name=True)
+    return update
+
+@router.post('/data')
+async def update_user_data(request: Request):
+    if not request.headers.get("X-User-ID"):
+        return Response(status_code=403, content='Forbidden')
+    try:
+        body = await request.json()
+    except Exception as e:
+        print(f'[Profile Router] Failed to parse body: {e}')
+        raise HTTPException(status_code=400, detail={'Bad Request'})
+    
+    update = None
+
+    if body.get('username'):
+        update, error = updateUsername(request.headers.get("X-User-ID"), body.get('username'))
+        if update is None:
+            print('[Profile Router] update failed')
+            raise HTTPException(status_code=400, detail={ "error": error.details() })
+    
+    if body.get('first_name'):
+        update, error = updateFirstname(request.headers.get("X-User-ID"), body.get('first_name'))
+        if update is None:
+            print('[Profile Router] update failed')
+            raise HTTPException(status_code=400, detail={ "error": error.details() })
+    
+    if body.get('last_name'):
+        update, error = updateLastname(request.headers.get("X-User-ID"), body.get('last_name'))
+        if update is None:
+            print('[Profile Router] update failed')
+            raise HTTPException(status_code=400, detail={ "error": error.details() })
+    
+    if body.get('email'):
+        update, error = updateEmail(request.headers.get("X-User-ID"), body.get('email'))
+        if update is None:
+            print('[Profile Router] update failed')
+            raise HTTPException(status_code=400, detail={ "error": error.details() })
+
+    if update is not None:
+        update = MessageToDict(update, preserving_proto_field_name=True)
+
     return update
 
 @router.post('/passwd')
@@ -114,7 +155,7 @@ async def update_picture(request: Request, response: Response, picture: UploadFi
             aws_secret_access_key = os.getenv('AWS_SECRET'))
         s3_key = f'avatars/{datetime.datetime.now(datetime.UTC).strftime("%Y%m%d%H%M%S")}_{user_id}_avatar.jpg'
         s3.put_object(Bucket='hyperrrr-bucket', Key=s3_key, Body=picture_content)
-        picture_url = f"https://hyperrrr-bucket.s3.amazonaws.com/{s3_key}"
+        picture_url = f"{os.getenv('S3_bucket')}/{s3_key}"
     except Exception as e:
         print('[Profile Router] s3 upload failed', e)
         raise HTTPException(status_code=400, detail={ "error": "s3 upload failed" })
