@@ -253,15 +253,12 @@ router.get('/:id', async (req, res) => {
         TorrentSearchApi.enableProvider('Yts')
         TorrentSearchApi.enableProvider('1337x')
         for (let resolution of ['720', '1080']) {
-            torrent = await TorrentSearchApi.search(['Yts', '1337x'], `${data.Title} ${data.Year} ${resolution}`, 'Movies', 1)
+            const torrent = await TorrentSearchApi.search(['Yts', '1337x'], `${data.Title} ${data.Year} ${resolution}`, 'Movies', 1)
             if (torrent.length > 0) {
                 torrents.push({
                     resolution: resolution,
                     magnet: await TorrentSearchApi.getMagnet(torrent[0])
                 })
-            }
-            else {
-                return res.status(404).json({ "Error": "Movie Not Found" })
             }
         }
         
@@ -272,11 +269,12 @@ router.get('/:id', async (req, res) => {
         })
         
         let subtitles = await subtitles_response.json()
+        let subtitles_links = null
         if (subtitles.total_count > 0) {
             const en_sub = subtitles.data.filter(sub => sub.attributes.language === 'en')[0];
             const fr_sub = subtitles.data.filter(sub => sub.attributes.language === 'fr')[0];
 
-            subtitlePromises = await [en_sub, fr_sub].map(async (sub) => {
+            const subtitlePromises = await [en_sub, fr_sub].map(async (sub) => {
                 if (!sub?.attributes) {
                     return null
                 }
@@ -327,7 +325,7 @@ router.get('/:id', async (req, res) => {
             writer: data.Writer,
             actors: data.Actors,
             country: data.Country,
-            torrents: torrents || [],
+            torrents: torrents,
             subtitles: subtitles_links || [],
             watched: watched_movies?.includes(data.imdbID.toString()) || false
         })
