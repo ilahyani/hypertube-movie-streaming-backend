@@ -1,5 +1,4 @@
 const express = require('express')
-const cors = require('cors')
 const swaggerUi = require('swagger-ui-express')
 const swaggerSpec = require('./swagger/swagger')
 
@@ -11,13 +10,31 @@ app.get('/api/stream', (req, res) => {
 
 app.use(express.json())
 
-app.use(cors())
+const swaggerUiAssetPath = require('swagger-ui-dist').getAbsoluteFSPath()
+app.use("/api/stream/docs/swagger-ui", express.static(swaggerUiAssetPath));
 
 app.use('/api/stream/comments', require('./routers/comments'))
 app.use('/api/stream/search', require('./routers/search'))
 app.use('/api/stream/video', require('./routers/video'))
 
-app.use('/api/stream/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+const swaggerOptions = {
+  swaggerOptions: {
+    url: "/api/stream/openapi.json",
+  },
+  customCssUrl: "/api/stream/docs/swagger-ui/swagger-ui.css",
+  customJs: [
+    "/api/stream/docs/swagger-ui/swagger-ui-bundle.js",
+    "/api/stream/docs/swagger-ui/swagger-ui-standalone-preset.js",
+    "/api/stream/docs/swagger-ui/swagger-ui-init.js",
+  ],
+};
+
+app.use(
+  "/api/stream/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, swaggerOptions)
+);
+
 
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err);
