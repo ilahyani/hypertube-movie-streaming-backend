@@ -34,7 +34,7 @@ async def gh_auth():
     return RedirectResponse(url=gh_auth_url)
 
 @router.get('/redirect')
-async def gh_auth_callback(request: Request, response: Response):
+async def gh_auth_callback(request: Request):
     encoded_state = request.query_params.get('state')
     state_data = json.loads(base64.urlsafe_b64decode(encoded_state).decode('utf-8'))
     state_record = await get_value_redis(state_data.get("key"))
@@ -87,6 +87,9 @@ async def gh_auth_callback(request: Request, response: Response):
     if user is None:
         return HTTPException(status_code=400, detail={"error": "Failed to register user"})
     access_token, refresh_token = sign_tokens(user)
+    
+    response = RedirectResponse(url=os.getenv("CLIENT_HOST"))
     response.set_cookie(key='access_token', value=access_token, httponly=True)
     response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
-    return user
+    
+    return response
