@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Query, Request
+from fastapi import FastAPI, Query, Request, Response
+import httpx
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
