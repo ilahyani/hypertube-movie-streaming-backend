@@ -77,14 +77,11 @@ async def verify_email(request: Request, token: str = Query(...)):
 
 @router.post('/reset')
 async def reset_passwd(request: Request, token: str = Query(...)):
-    if not request.headers.get("X-User-ID"):
-        return Response(status_code=403, content='Forbidden') 
-    user_id = request.headers.get("X-User-ID")
-    
     try:
         decoded = jwt.decode(token, os.getenv('JWT_SECRET'), algorithms=os.getenv('JWT_ALGORITHM'))
-        if decoded.get("user_id") != user_id:
-            return HTTPException(status_code=400, detail={"invalid_token"})
+        user_id = decoded.get("user_id")
+        if not user_id:
+            raise HTTPException(status_code=403, detail=['Forbidden: Invalid Token'])
         
         try:
             body = await request.json()
@@ -96,7 +93,7 @@ async def reset_passwd(request: Request, token: str = Query(...)):
         new_password = str(body.get('new_password'))
         if not new_password:
             raise HTTPException(status_code=400, detail={'Bad Request'})
-        update, error = updatePassword(request.headers.get("X-User-ID"), None, new_password)
+        update, error = updatePassword(user_id, None, new_password)
         
         if update is None:
             print('[reset-password Router] update failed')
