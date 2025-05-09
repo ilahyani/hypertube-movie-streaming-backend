@@ -16,11 +16,10 @@ load_dotenv()
 async def send_passwdReset_email(request: Request, email: str = Query(...)):
     if not email:
         raise HTTPException(status_code=404, detail={'error': 'email missing'})
-    user = getUserByEmail(email)
-    if user is None:
-        print('user not found')
-        raise HTTPException(status_code=400, detail={'error': 'Bad Request'})
-    user = MessageToDict(user[0], preserving_proto_field_name=True)
+    user, error = getUserByEmail(email)
+    user = MessageToDict(user, preserving_proto_field_name=True)
+    if not user:
+        raise HTTPException(status_code=400, detail={'error': 'User Not Found'})
     email = user['user']['email']
     id = user['user']['id']
     payload = {

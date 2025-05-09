@@ -38,8 +38,6 @@ class UserServiceServicer(hyper_pb2_grpc.UserServiceServicer):
             logger.info(f'database exception: {e}')
             return hyper_pb2.userResponse()
         if user is None:
-            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            context.set_details('invalid email')
             return hyper_pb2.userResponse()
         logger.info(f'get_user_by_email: {user}')
         user_response = user_dict_to_pb2_user(user)
