@@ -99,13 +99,17 @@ message updateLastnameRequest {
 
 message updatePasswordRequest {
     string id = 1;
-    string old_password = 2;
+    optional string old_password = 2;
     string new_password = 3;
 }
 
 message updatePictureRequest {
     string id = 1;
     string picture = 2;
+}
+
+message getUserByEmailRequest {
+    string email = 1;
 }
 
 message userResponse {
@@ -121,6 +125,7 @@ service UserService {
     rpc updateEmailService (updateEmailRequest) returns (userResponse);
     rpc updatePasswordService (updatePasswordRequest) returns (userResponse);
     rpc updatePictureService (updatePictureRequest) returns (userResponse);
+    rpc getUserByEmailService (getUserByEmailRequest) returns (userResponse);
 }
 
 // // // // // // // // // // // //  MOVIES API

@@ -96,6 +96,19 @@ def updatePassword(id: str, old_password: str, new_password: str):
     channel.close()
     return res, None
 
+def getUserByEmail(email: str):
+    channel = grpc.insecure_channel(f'{os.getenv('GRPC_SERVER_HOST')}:{os.getenv('GRPC_SERVER_PORT')}')
+    stub = hyper_pb2_grpc.UserServiceStub(channel)
+    req = hyper_pb2.getUserByEmailRequest(email=email)
+    try:
+        res = stub.getUserByEmailService(req)
+    except Exception as e:
+        print(f'[gRPC Client] method getUserByEmail Failed: {e}')
+        channel.close()
+        return None, e
+    channel.close()
+    return res, None
+
 def searchUsers(query: str):
     channel = grpc.insecure_channel(f'{os.getenv('GRPC_SERVER_HOST')}:{os.getenv('GRPC_SERVER_PORT')}')
     stub = hyper_pb2_grpc.UserServiceStub(channel)

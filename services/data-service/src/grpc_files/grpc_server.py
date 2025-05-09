@@ -24,6 +24,28 @@ def user_dict_to_pb2_user(user_dict):
     )
 
 class UserServiceServicer(hyper_pb2_grpc.UserServiceServicer):
+    def getUserByEmailService(self, request, context):
+        logger.info(f'Received GetUserByEmail request: {request}')
+        if not request.email:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('Operation Failed: missing data')
+            return hyper_pb2.userResponse()
+        try:
+            user = asyncio.run(db.get_user_by_email(request.email))
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(f'[getUserService] database exception: {e}')
+            logger.info(f'database exception: {e}')
+            return hyper_pb2.userResponse()
+        if user is None:
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details('invalid email')
+            return hyper_pb2.userResponse()
+        logger.info(f'get_user_by_email: {user}')
+        user_response = user_dict_to_pb2_user(user)
+        logger.info(f'getUserByEmail succeeded: {user_response}')
+        return hyper_pb2.userResponse(user=user_response)
+
     def getUserService(self, request, context):
         logger.info(f'Received getUserService request: {request}')
         if not request.id:
@@ -190,12 +212,15 @@ class UserServiceServicer(hyper_pb2_grpc.UserServiceServicer):
     
     def updatePasswordService(self, request, context):
         logger.info(f'Received updatePasswordService request: {request}')
-        if not request.id or not request.old_password or not request.new_password:
+        if not request.id or not request.new_password:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details('Operation Failed: missing data')
             return hyper_pb2.userResponse()
         try:
-            user = asyncio.run(db.update_password(request.id, request.old_password, request.new_password))
+            if request.old_password:
+                user = asyncio.run(db.update_password(request.id, request.old_password, request.new_password))
+            else:
+                user = asyncio.run(db.update_password(request.id, None, request.new_password))
         except Exception as e:
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             context.set_details(f'[updatePasswordService] database exception: {e}')

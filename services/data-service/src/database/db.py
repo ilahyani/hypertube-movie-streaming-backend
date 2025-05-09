@@ -109,6 +109,16 @@ async def get_user_by_id(id: str):
         del user['passwd']
     return user
 
+async def get_user_by_email(email: str):
+    user = None
+    data = await fetch_db("SELECT * FROM Users WHERE email = %s ;", (email, ))
+    if data is None:
+        return data
+    user = _convert_to_user_dict(data)
+    if user:
+        del user['passwd']
+    return user
+
 async def update_user_data(id: str, field: str, value: str):
     user = await get_user_by_id(id)
     if not user:
@@ -155,8 +165,11 @@ async def update_password(id: str, old_password: str, new_password: str):
     user = _convert_to_user_dict(data)
     if user is None:
         return user
-    if bcrypt.checkpw(old_password.encode(), user['passwd'].encode()) is False:
-        raise Exception("Old Password invalid")
+    if user['oauth_id']:
+        raise Exception("Can't change password, you're account is linked with an oauth provider")
+    if old_password:
+        if bcrypt.checkpw(old_password.encode(), user['passwd'].encode()) is False:
+            raise Exception("Old Password invalid")
     pool = get_conn_pool()
     if pool is None:
         print("Database connection pool is not available.")
@@ -170,6 +183,8 @@ async def update_password(id: str, old_password: str, new_password: str):
             conn.commit()
     except psycopg.Error as e:
         raise Exception("Database Failed")
+    finally:
+        pool.putconn(conn)
     del user['passwd']
     return user
 
