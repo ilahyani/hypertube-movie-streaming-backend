@@ -80,14 +80,14 @@ router.get('/', async (req, res) => {
 
     if (isNaN(page) || isNaN(pageSize)) {
         if (isNaN(page)) page = 0
-        if (isNaN(pageSize)) page = 10
+        if (isNaN(pageSize)) pageSize = 50
     }
     if (!query) {
         query = ""
-        sort = 'r'
+        // sort = 'r'
     }
     if (!sort) {
-        sort = 't'
+        sort = 'r'
     }
     if (cursor === "") {
         cursor = null
@@ -98,13 +98,13 @@ router.get('/', async (req, res) => {
         if (!cursor) {
             let url = `${process.env.YTS_API}/list_movies.json?query_term=${query}&limit=${pageSize}&page=${page}`
             if (sort == 'y') {
-                url += `&order_by=asc&sort_by=year`
+                url += `&order_by=desc&sort_by=year`
             }
             else if (sort == 'r') {
-                url += `&order_by=asc&sort_by=rating`
+                url += `&order_by=desc&sort_by=rating`
             }
             else {
-                url += `&order_by=asc&sort_by=title`
+                url += `&order_by=desc&sort_by=title`
             }
             const response = await fetch(url)
             if (!response.ok) {
@@ -116,10 +116,10 @@ router.get('/', async (req, res) => {
         if (query && movies?.length == 0) {
             let url = `${process.env.IMDB_API}/search?originalTitle=${query}&type=movie&rows=${pageSize}`
             if (sort == 'r') {
-                url += '&sortOrder=ASC&sortField=averageRating'
+                url += '&sortOrder=DESC&sortField=averageRating'
             }
             else if (sort == 'y') {
-                url += '&sortOrder=ASC&sortField=startYear'
+                url += '&sortOrder=DESC&sortField=startYear'
             }
             if (cursor) {
                 url += `&cursorMark=${cursor}`
@@ -139,8 +139,8 @@ router.get('/', async (req, res) => {
                 : data.results
             nextCursorMark = data.nextCursorMark
         }
-        const movie_ids = movies.map((movie) => movie.imdb_code || movie.id)
-        if (movie_ids.length > 0) {
+        const movie_ids = movies?.map((movie) => movie.imdb_code || movie.id)
+        if (movie_ids?.length > 0) {
             const watched_movies = await getUserMoviesRPC(movie_ids, user_id)
             movies = movies.map((movie) => {
                 return {
@@ -156,7 +156,8 @@ router.get('/', async (req, res) => {
         if (nextCursorMark) {
             return res.status(200).json({ movies, nextCursorMark })
         }
-        return res.status(200).json({ movies })
+        return res.status(200).json({ movies: movies || [] })
+        
     }
     catch (error) {
         console.error(error)
