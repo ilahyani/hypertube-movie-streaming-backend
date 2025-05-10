@@ -89,7 +89,7 @@ async def ft_auth_callback(request: Request):
     access_token, refresh_token = sign_tokens(user)
     
     response = RedirectResponse(url=os.getenv("CLIENT_HOST"))
-    response.set_cookie(key='access_token', value=access_token, httponly=True)
-    response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
+    response.set_cookie(key='access_token', value=access_token, httponly=True, domain=localhost)
+    response.set_cookie(key='refresh_token', value=refresh_token, httponly=True, domain=localhost)
     
     return response

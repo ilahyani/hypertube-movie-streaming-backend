@@ -74,7 +74,7 @@ async def discord_auth_callback(request: Request):
             return HTTPException(status_code=400, detail={"error": "Required data missing: username"})
     username = username.lower()
     try:
-        user = register_user(oauth_id, email, name, name, username, avatar)
+        user = await register_user(oauth_id, email, name, name, username, avatar)
     except Exception as e:
         print('[D_OAUTH]', e)
         return HTTPException(status_code=400, detail={"error": f"Failed to register user: {e}"})
@@ -83,7 +83,7 @@ async def discord_auth_callback(request: Request):
     access_token, refresh_token = sign_tokens(user)
 
     response = RedirectResponse(url=os.getenv("CLIENT_HOST"))
-    response.set_cookie(key='access_token', value=access_token, httponly=True)
-    response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
+    response.set_cookie(key='access_token', value=access_token, httponly=True, domain=localhost)
+    response.set_cookie(key='refresh_token', value=refresh_token, httponly=True, domain=localhost)
     
     return response

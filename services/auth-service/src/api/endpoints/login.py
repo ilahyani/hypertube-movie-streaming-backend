@@ -21,6 +21,6 @@ async def login(data: UserLoginModel, response: Response):
         raise HTTPException(status_code=401, detail="Incorrect username or password")
     del user['passwd']
     access_token, refresh_token = sign_tokens(user)
-    response.set_cookie(key='access_token', value=access_token, httponly=True)
-    response.set_cookie(key='refresh_token', value=refresh_token, httponly=True)
+    response.set_cookie(key='access_token', value=access_token, httponly=True, domain=localhost)
+    response.set_cookie(key='refresh_token', value=refresh_token, httponly=True, domain=localhost)
     return user
